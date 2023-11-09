@@ -22,10 +22,10 @@ func main() {
 	if os.Args[1] == "server" {
 		err = core.Server(config)
 	} else if os.Args[1] == "client" {
-		var box *box.Box
-		box, err = core.Client(config)
+		var b *box.Box
+		b, err = core.Client(config)
 		if err == nil {
-			err = box.Start()
+			err = b.Start()
 		}
 	}
 	if err != nil {
