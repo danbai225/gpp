@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "embed"
+	"encoding/json"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -36,12 +37,22 @@ type App struct {
 	lock   sync.Mutex
 	tip    *widget.Label
 	logo   fyne.Resource
+	config core.Config
 }
 
 func main() {
+	config := core.Config{}
+	var bytes []byte
+	if len(os.Args) < 2 {
+		bytes, _ = os.ReadFile("config.json")
+	} else {
+		bytes, _ = os.ReadFile(os.Args[1])
+	}
+	_ = json.Unmarshal(bytes, &config)
 	mainApp := App{
-		App:  app.New(),
-		logo: fyne.NewStaticResource("logo.png", logo),
+		App:    app.New(),
+		logo:   fyne.NewStaticResource("logo.png", logo),
+		config: config,
 	}
 	mainApp.SetIcon(mainApp.logo)
 	if desk, ok := mainApp.App.(desktop.App); ok {
@@ -77,7 +88,7 @@ func (a *App) Switch() {
 		a.btn.SetText("加速")
 		a.run = false
 	} else {
-		client, err := core.Client()
+		client, err := core.Client(a.config)
 		if err != nil {
 			logs.Err(err)
 			return

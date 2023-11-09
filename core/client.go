@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func Client() (*box.Box, error) {
+func Client(conf Config) (*box.Box, error) {
 	home, _ := os.UserHomeDir()
 	var instance, err = box.New(box.Options{
 		Context: context.Background(),
@@ -64,13 +64,13 @@ func Client() (*box.Box, error) {
 					Tag:  "socks-in",
 					SocksOptions: option.SocksInboundOptions{
 						ListenOptions: option.ListenOptions{
-							Listen:     option.NewListenAddress(netip.AddrFrom4([4]byte([]byte{0, 0, 0, 0}))),
+							Listen:     option.NewListenAddress(netip.MustParseAddr("0.0.0.0")),
 							ListenPort: 5123,
 						},
 						Users: []auth.User{
 							{
 								Username: "admin",
-								Password: "admin",
+								Password: conf.UUID,
 							},
 						},
 					},
@@ -122,10 +122,10 @@ func Client() (*box.Box, error) {
 					Tag:  "vless-out",
 					VLESSOptions: option.VLESSOutboundOptions{
 						ServerOptions: option.ServerOptions{
-							Server:     "8.134.165.75",
-							ServerPort: 5123,
+							Server:     conf.Addr,
+							ServerPort: conf.Port,
 						},
-						UUID: "badb17ef-eb22-4e03-9b17-efeb224e03e7",
+						UUID: conf.UUID,
 						Multiplex: &option.MultiplexOptions{
 							Enabled:        true,
 							Protocol:       "smux",

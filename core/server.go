@@ -5,10 +5,9 @@ import (
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/option"
 	"net/netip"
-	"time"
 )
 
-func Server() error {
+func Server(conf Config) error {
 	var instance, err = box.New(box.Options{
 		Context: context.Background(),
 		Options: option.Options{
@@ -36,29 +35,19 @@ func Server() error {
 					IndependentCache: false,
 				},
 			},
-			NTP: &option.NTPOptions{
-				Enabled:       true,
-				Interval:      option.Duration(time.Minute * 30),
-				WriteToSystem: false,
-				ServerOptions: option.ServerOptions{
-					Server:     "time.apple.com",
-					ServerPort: 123,
-				},
-				DialerOptions: option.DialerOptions{},
-			},
 			Inbounds: []option.Inbound{
 				{
 					Type: "vless",
 					Tag:  "vless-in",
 					VLESSOptions: option.VLESSInboundOptions{
 						ListenOptions: option.ListenOptions{
-							Listen:     option.NewListenAddress(netip.AddrFrom4([4]byte([]byte{0, 0, 0, 0}))),
-							ListenPort: 5123,
+							Listen:     option.NewListenAddress(netip.MustParseAddr(conf.Addr)),
+							ListenPort: conf.Port,
 						},
 						Users: []option.VLESSUser{
 							{
 								Name: "danbai",
-								UUID: "badb17ef-eb22-4e03-9b17-efeb224e03e7",
+								UUID: conf.UUID,
 							},
 						},
 						TLS: nil,

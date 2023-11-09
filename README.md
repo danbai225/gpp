@@ -1,8 +1,19 @@
 # gpp
-gpp加速器
 
-# 让你的加速器支持主机、mac、linux
+gpp加速器，让你的加速器支持主机、mac、linux
 
-使用 golang 编译你需要的版本
+# 编译命令行
 
-可以直接使用`core`下的包编译命令行版本，把他运行在你的终端,例如路由器上。
+使用`golang`编译 `cmd/gpp/main.go`获得命令行二进制文件。
+
+# 编译GUI客户端
+
+使用`fyne.io`编译
+- windows
+```
+fyne package -os windows -icon logo.png
+```
+- linux
+```
+fyne package -os linux -icon logo.png
+```
