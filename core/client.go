@@ -45,7 +45,7 @@ func Client() (*box.Box, error) {
 					Tag:  "tun-in",
 					TunOptions: option.TunInboundOptions{
 						InterfaceName: "utun225",
-						MTU:           1200,
+						MTU:           9000,
 						Inet4Address: option.Listable[netip.Prefix]{
 							netip.MustParsePrefix("172.19.0.1/30"),
 						},
