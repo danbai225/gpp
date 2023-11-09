@@ -56,12 +56,13 @@ func main() {
 	}
 	mainApp.SetIcon(mainApp.logo)
 	if desk, ok := mainApp.App.(desktop.App); ok {
-		m := fyne.NewMenu("GPP")
+		m := fyne.NewMenu("GPP", fyne.NewMenuItem("显示", func() { mainApp.window.Show() }))
 		desk.SetSystemTrayMenu(m)
 		desk.SetSystemTrayIcon(mainApp.logo)
 	}
 	mainApp.btn = widget.NewButton("加速", mainApp.Switch)
 	mainApp.window = mainApp.NewWindow("GPP加速器")
+	mainApp.window.SetCloseIntercept(func() { mainApp.window.Hide() })
 	h0 := container.New(layout.NewHBoxLayout(), layout.NewSpacer(), widget.NewLabel("欢迎使用GPP加速器，本加速器内测免费使用。"), layout.NewSpacer())
 	mainApp.tip = widget.NewLabel("第一次使用加速器需要下载资源加速过程需要1-2分钟。")
 	h1 := container.New(layout.NewHBoxLayout(), layout.NewSpacer(), mainApp.tip, layout.NewSpacer())
