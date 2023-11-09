@@ -1,1 +1,0 @@
-go build -ldflags "-w -s" -buildmode=c-shared -o ./bin/windows/gpp.dll ./export.go

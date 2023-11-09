@@ -9,11 +9,16 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 3 {
+	var path string
+	if len(os.Args) < 2 {
 		fmt.Println("Usage: gpp [server|client] [config.json]")
 		return
+	} else if len(os.Args) > 2 {
+		path = os.Args[2]
+	} else {
+		path = "config.json"
 	}
-	bytes, err := os.ReadFile(os.Args[2])
+	bytes, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println("read config err:", err)
 	}
@@ -30,5 +35,8 @@ func main() {
 	}
 	if err != nil {
 		fmt.Println("run err:", err)
+	} else {
+		fmt.Println("启动成功！！！")
+		select {}
 	}
 }
