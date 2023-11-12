@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/danbai225/gpp/core"
+	"os"
 )
 
 func init() {
@@ -10,25 +13,12 @@ func init() {
 
 //export Server
 func Server() {
-	//bytes, err := os.ReadFile("config.json")
-	//if err != nil {
-	//	fmt.Println("read config err:", err)
-	//}
-	config := core.Config{
-		Port: 5123,
-		Addr: "0.0.0.0",
-		UUID: "badb17ef-eb22-4e03-9b17-efeb224e03e7",
+	bytes, err := os.ReadFile("config.json")
+	if err != nil {
+		fmt.Println("read config err:", err)
 	}
-	//_ = json.Unmarshal(bytes, &config)
-	core.Server(config)
+	config := core.Config{}
+	_ = json.Unmarshal(bytes, &config)
+	_ = core.Server(config)
 }
-func main() {
-	config := core.Config{
-		Port: 5123,
-		Addr: "0.0.0.0",
-		UUID: "badb17ef-eb22-4e03-9b17-efeb224e03e7",
-	}
-	//_ = json.Unmarshal(bytes, &config)
-	core.Server(config)
-	select {}
-}
+func main() {}
