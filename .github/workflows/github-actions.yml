@@ -1,0 +1,67 @@
+name: github-actions
+# 触发条件
+on:
+  push:
+    tags:
+      - v*
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+    steps:
+      - name: Check out git repository
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.21.1'
+      - name: Build App mac
+        if: ${{ matrix.os == 'macos-latest'}}
+        run: |
+          go build -ldflags '-w -s' -o build/gpp cmd/gpp/main.go
+          tar czf gpp-${{ matrix.os }}.tgz build/*
+      - name: Build App windows
+        if: ${{ matrix.os == 'windows-latest'}}
+        shell: cmd
+        run: |
+          rd /s/q build
+          md build
+          go build -ldflags="-s -w -H windowsgui" -o build\gpp.exe cmd\gpp\main.go
+          tar czf gpp-${{ matrix.os }}.tgz build/*
+      - name: Build App linux
+        if: ${{ matrix.os == 'ubuntu-latest'}}
+        run: |
+          sudo apt install gcc libc6-dev libx11-dev xorg-dev libxtst-dev libpng++-dev xcb libxcb-xkb-dev x11-xkb-utils libx11-xcb-dev libxkbcommon-x11-dev libxkbcommon-dev xsel xclip 
+          go build -ldflags '-w -s' -o build/gpp cmd/gpp/main.go
+          tar czf gpp-${{ matrix.os }}.tgz build/*
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: gpp-${{ matrix.os }}.tgz
+  release:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: pull-linux
+        uses: actions/download-artifact@v3
+        with:
+          name: ubuntu-latest
+          path: gpp-linux
+      - name: pull-mac
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-latest
+          path: gpp-macos
+      - name: pull-windows
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-latest
+          path: gpp-windows
+      - name: release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: false
+          files: gpp*/*
