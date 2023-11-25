@@ -22,6 +22,9 @@ func init() {
 	switch {
 	case goos.IsWindows == 1:
 		_ = os.Setenv("FYNE_FONT", "C:\\windows\\Fonts\\simfang.ttf")
+	case goos.IsDarwin == 1:
+		_ = os.Setenv("FYNE_FONT", "/System/Library/Fonts/Supplemental/Arial Unicode.ttf")
+
 	}
 }
 
