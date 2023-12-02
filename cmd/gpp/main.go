@@ -10,13 +10,15 @@ import (
 
 func main() {
 	var path string
+	home, _ := os.UserHomeDir()
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: gpp [server|client] [config.json]")
 		return
 	} else if len(os.Args) > 2 {
 		path = os.Args[2]
 	} else {
-		_, err := os.Stat("~/.gpp/config.json")
+		path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
+		_, err := os.Stat(path)
 		if err != nil {
 			path = "config.json"
 		}

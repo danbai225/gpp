@@ -3,6 +3,7 @@ package main
 import (
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -44,10 +45,16 @@ type App struct {
 }
 
 func main() {
+	home, _ := os.UserHomeDir()
 	config := core.Config{}
+	path := fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
 	var bytes []byte
 	if len(os.Args) < 2 {
-		bytes, _ = os.ReadFile("config.json")
+		_, err := os.Stat(path)
+		if err != nil {
+			path = "config.json"
+		}
+		bytes, _ = os.ReadFile(path)
 	} else {
 		bytes, _ = os.ReadFile(os.Args[1])
 	}
