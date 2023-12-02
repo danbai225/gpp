@@ -16,7 +16,10 @@ func main() {
 	} else if len(os.Args) > 2 {
 		path = os.Args[2]
 	} else {
-		path = "config.json"
+		_, err := os.Stat("~/.gpp/config.json")
+		if err != nil {
+			path = "config.json"
+		}
 	}
 	bytes, err := os.ReadFile(path)
 	if err != nil {
