@@ -27,6 +27,7 @@ func Client(conf Config) (*box.Box, error) {
 					{
 						Tag:     "ali",
 						Address: "223.5.5.5",
+						Detour:  "direct",
 					},
 				},
 				Rules:          []option.DNSRule{},
