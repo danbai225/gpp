@@ -11,8 +11,17 @@ import (
 )
 
 func Client(conf Config) (*box.Box, error) {
+	var deferPeer Peer
+	var httpPeer Peer
+	if conf.Default.Addr != "" {
+		deferPeer = conf.Default
+		httpPeer = conf.HTTP
+	} else if conf.Peer.Addr != "" {
+		deferPeer = conf.Peer
+		httpPeer = deferPeer
+	}
 	home, _ := os.UserHomeDir()
-	var instance, err = box.New(box.Options{
+	options := box.Options{
 		Context: context.Background(),
 		Options: option.Options{
 			Log: &option.LogOptions{
@@ -67,6 +76,9 @@ func Client(conf Config) (*box.Box, error) {
 						ListenOptions: option.ListenOptions{
 							Listen:     option.NewListenAddress(netip.MustParseAddr("0.0.0.0")),
 							ListenPort: 5123,
+							InboundOptions: option.InboundOptions{
+								SniffEnabled: true,
+							},
 						},
 						Users: []auth.User{
 							{
@@ -108,7 +120,8 @@ func Client(conf Config) (*box.Box, error) {
 							Geosite:  option.Listable[string]{"cn"},
 							Outbound: "direct",
 						},
-					}, {
+					},
+					{
 						Type: "default",
 						DefaultOptions: option.DefaultRule{
 							GeoIP:    option.Listable[string]{"cn", "private"},
@@ -158,7 +171,43 @@ func Client(conf Config) (*box.Box, error) {
 				},
 			},
 		},
-	})
+	}
+	if httpPeer.Addr != "" {
+		out := "http-out"
+		if httpPeer.Addr != "direct" {
+			options.Options.Outbounds = append(options.Options.Outbounds, option.Outbound{
+				Type: "vless",
+				Tag:  "http-out",
+				VLESSOptions: option.VLESSOutboundOptions{
+					ServerOptions: option.ServerOptions{
+						Server:     httpPeer.Addr,
+						ServerPort: httpPeer.Port,
+					},
+					UUID: httpPeer.UUID,
+					Multiplex: &option.MultiplexOptions{
+						Enabled:        true,
+						Protocol:       "smux",
+						MaxConnections: 5,
+						MinStreams:     1,
+						MaxStreams:     10,
+						Padding:        false,
+					},
+					Transport: &option.V2RayTransportOptions{
+						Type: "ws",
+						WebsocketOptions: option.V2RayWebsocketOptions{
+							Path:                "/test",
+							MaxEarlyData:        2048,
+							EarlyDataHeaderName: "Sec-WebSocket-Protocol",
+						},
+					},
+				},
+			})
+		} else {
+			out = "direct"
+		}
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http", "quic", "tls"}, Outbound: out}})
+	}
+	var instance, err = box.New(options)
 	if err != nil {
 		return nil, err
 	}
