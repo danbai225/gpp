@@ -136,10 +136,10 @@ func Client(conf Config) (*box.Box, error) {
 					Tag:  "vless-out",
 					VLESSOptions: option.VLESSOutboundOptions{
 						ServerOptions: option.ServerOptions{
-							Server:     conf.Addr,
-							ServerPort: conf.Port,
+							Server:     deferPeer.Addr,
+							ServerPort: deferPeer.Port,
 						},
-						UUID: conf.UUID,
+						UUID: deferPeer.UUID,
 						Multiplex: &option.MultiplexOptions{
 							Enabled:        true,
 							Protocol:       "smux",
