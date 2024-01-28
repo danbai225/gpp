@@ -8,7 +8,6 @@ import (
 	"github.com/sagernet/sing/common/auth"
 	"net/netip"
 	"os"
-	"time"
 )
 
 func Client(conf Config) (*box.Box, error) {
@@ -63,7 +62,7 @@ func Client(conf Config) (*box.Box, error) {
 						AutoRoute:              true,
 						StrictRoute:            false,
 						EndpointIndependentNat: true,
-						UDPTimeout:             option.UDPTimeoutCompat(time.Second * 300),
+						UDPTimeout:             300,
 						Stack:                  "system",
 						InboundOptions: option.InboundOptions{
 							SniffEnabled: true,
@@ -141,7 +140,7 @@ func Client(conf Config) (*box.Box, error) {
 							ServerPort: deferPeer.Port,
 						},
 						UUID: deferPeer.UUID,
-						Multiplex: &option.OutboundMultiplexOptions{
+						Multiplex: &option.MultiplexOptions{
 							Enabled:        true,
 							Protocol:       "smux",
 							MaxConnections: 5,
@@ -185,7 +184,7 @@ func Client(conf Config) (*box.Box, error) {
 						ServerPort: httpPeer.Port,
 					},
 					UUID: httpPeer.UUID,
-					Multiplex: &option.OutboundMultiplexOptions{
+					Multiplex: &option.MultiplexOptions{
 						Enabled:        true,
 						Protocol:       "smux",
 						MaxConnections: 5,
