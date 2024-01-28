@@ -8,6 +8,7 @@ import (
 	"github.com/sagernet/sing/common/auth"
 	"net/netip"
 	"os"
+	"time"
 )
 
 func Client(conf Config) (*box.Box, error) {
@@ -62,7 +63,7 @@ func Client(conf Config) (*box.Box, error) {
 						AutoRoute:              true,
 						StrictRoute:            false,
 						EndpointIndependentNat: true,
-						UDPTimeout:             300,
+						UDPTimeout:             option.UDPTimeoutCompat(time.Second * 300),
 						Stack:                  "system",
 						InboundOptions: option.InboundOptions{
 							SniffEnabled: true,
