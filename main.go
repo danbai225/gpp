@@ -14,19 +14,18 @@ import (
 	"github.com/danbai225/gpp/core"
 	"github.com/getlantern/elevate"
 	box "github.com/sagernet/sing-box"
-	"github.com/sagernet/sing-box/constant/goos"
 	_ "image/png"
 	"os"
+	"runtime"
 	"sync"
 )
 
 func init() {
-	switch {
-	case goos.IsWindows == 1:
+	switch runtime.GOOS {
+	case "windows":
 		_ = os.Setenv("FYNE_FONT", "C:\\windows\\Fonts\\simfang.ttf")
-	case goos.IsDarwin == 1:
+	case "darwin":
 		_ = os.Setenv("FYNE_FONT", "/System/Library/Fonts/Supplemental/Arial Unicode.ttf")
-
 	}
 }
 

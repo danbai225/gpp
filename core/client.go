@@ -140,7 +140,7 @@ func Client(conf Config) (*box.Box, error) {
 							ServerPort: deferPeer.Port,
 						},
 						UUID: deferPeer.UUID,
-						Multiplex: &option.MultiplexOptions{
+						Multiplex: &option.OutboundMultiplexOptions{
 							Enabled:        true,
 							Protocol:       "smux",
 							MaxConnections: 5,
@@ -184,7 +184,7 @@ func Client(conf Config) (*box.Box, error) {
 						ServerPort: httpPeer.Port,
 					},
 					UUID: httpPeer.UUID,
-					Multiplex: &option.MultiplexOptions{
+					Multiplex: &option.OutboundMultiplexOptions{
 						Enabled:        true,
 						Protocol:       "smux",
 						MaxConnections: 5,

@@ -50,7 +50,6 @@ func Server(conf Config) error {
 								UUID: conf.UUID,
 							},
 						},
-						TLS: nil,
 						Transport: &option.V2RayTransportOptions{
 							Type: "ws",
 							WebsocketOptions: option.V2RayWebsocketOptions{
