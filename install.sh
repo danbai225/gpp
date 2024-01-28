@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "欢迎使用 gpp 服务端安装脚本"
-read -p "输入安装路径 (默认是 /usr/local/gpp): "
+read -p "输入安装路径 (默认是 /usr/local/gpp): " INSTALL_PATH
 # 设置默认安装路径
 INSTALL_PATH=${INSTALL_PATH:-"/usr/local/gpp"}
 read -p "请输入监听地址（默认0.0.0.0）: " LISTEN_ADDRESS
