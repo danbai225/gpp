@@ -75,7 +75,13 @@ fyne package -os darwin -icon logo.png
 
 如果你有一台vps服务器，并且有优质的线路，那么你可以直接运行服务端，然后将你的vps服务器ip地址和端口号填入客户端配置文件中。
 
-快速安装服务端脚本（仅支持linux）
+#### 手动下载运行
+
+下载对应平台的服务端文件，然后运行，记得放`config.json`到你的服务端同级目录下
+
+执行 `gpp server`
+
+#### 快速安装服务端脚本（仅支持linux）
 
 ```bash
 wget -O - https://raw.githubusercontent.com/danbai225/gpp/main/install.sh | bash
@@ -86,6 +92,10 @@ wget -O - https://raw.githubusercontent.com/danbai225/gpp/main/install.sh | bash
 同样的将配置文件修改后放入客户端可执行文件同级目录,启动后会自动读取同级目录下的`config.json`文件。
 
 启动成功后会看到`启动成功`提示。第一次使用会下载数据需要等待一会。
+
+## 命令行客户端
+
+执行 `gpp client`
 
 # 效果图
 
