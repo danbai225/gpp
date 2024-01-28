@@ -49,7 +49,7 @@ func main() {
 	// 如果没有管理员权限则重新启动程序
 	// 如果有则继续运行
 	if len(os.Args) == 1 {
-		cmd := elevate.Command(os.Args[0], "--escalate")
+		cmd := elevate.Command(os.Args[0], "sudo")
 		// 开始运行
 		_ = cmd.Run()
 		// 结束
@@ -57,9 +57,16 @@ func main() {
 	}
 	home, _ := os.UserHomeDir()
 	config := core.Config{}
-	path := fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
-	var bytes []byte
-	bytes, _ = os.ReadFile(path)
+	path := "config.json"
+	bytes, err := os.ReadFile(path)
+	if err != nil {
+		path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
+		bytes, err = os.ReadFile(path)
+		if err != nil {
+			log.Println("读取配置文件失败:", err)
+			return
+		}
+	}
 	_ = json.Unmarshal(bytes, &config)
 	mainApp := App{
 		App:    app.New(),
