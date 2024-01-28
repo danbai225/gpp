@@ -8,6 +8,8 @@ gpp加速器，让你的加速器支持主机、mac、linux
 
 # 编译GUI客户端
 
+`go install fyne.io/fyne/v2/cmd/fyne@latest`
+
 使用`fyne.io`编译
 
 - windows
@@ -17,6 +19,10 @@ fyne package -os windows -icon logo.png
 - linux
 ```
 fyne package -os linux -icon logo.png
+```
+- mac
+```
+fyne package -os darwin -icon logo.png
 ```
 
 # 使用方法

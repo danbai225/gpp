@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	logs "github.com/danbai225/go-logs"
 	"github.com/danbai225/gpp/core"
+	"github.com/getlantern/elevate"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/constant/goos"
 	_ "image/png"
@@ -45,6 +46,16 @@ type App struct {
 }
 
 func main() {
+	// 检查是否有管理员权限
+	// 如果没有管理员权限则重新启动程序
+	// 如果有则继续运行
+	if len(os.Args) == 1 {
+		cmd := elevate.Command(os.Args[0], "--escalate")
+		// 开始运行
+		_ = cmd.Run()
+		// 结束
+		os.Exit(0)
+	}
 	home, _ := os.UserHomeDir()
 	config := core.Config{}
 	path := fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
