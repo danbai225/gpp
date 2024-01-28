@@ -1,6 +1,6 @@
 module github.com/danbai225/gpp
 
-go 1.21.1
+go 1.21.4
 
 require (
 	fyne.io/fyne/v2 v2.4.1
@@ -47,7 +47,7 @@ require (
 	github.com/gofrs/uuid/v5 v5.0.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/btree v1.1.2 // indirect
-	github.com/google/pprof v0.0.0-20210407192527-94a9f03dee38 // indirect
+	github.com/google/pprof v0.0.0-20210720184732-4bb14d4b1be1 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/insomniacslk/dhcp v0.0.0-20231016090811-6a2c8fbdcc1c // indirect
@@ -57,6 +57,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/kpango/fastime v1.1.9 // indirect
 	github.com/kpango/glg v1.6.15 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
 	github.com/libdns/alidns v1.0.3 // indirect
 	github.com/libdns/cloudflare v0.1.0 // indirect
 	github.com/libdns/libdns v0.2.1 // indirect
@@ -67,7 +68,7 @@ require (
 	github.com/ooni/go-libtor v1.1.8 // indirect
 	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
-	github.com/pierrec/lz4/v4 v4.1.14 // indirect
+	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/qtls-go1-20 v0.3.4 // indirect
@@ -99,6 +100,7 @@ require (
 	github.com/u-root/uio v0.0.0-20230220225925-ffce2a382923 // indirect
 	github.com/vishvananda/netns v0.0.0-20211101163701-50045581ed74 // indirect
 	github.com/yuin/goldmark v1.5.5 // indirect
+	github.com/zeebo/assert v1.3.0 // indirect
 	github.com/zeebo/blake3 v0.2.3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
@@ -116,6 +118,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/grpc v1.59.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/js/dom v0.0.0-20210725211120-f030747120f2 // indirect
 	lukechampine.com/blake3 v1.2.1 // indirect
