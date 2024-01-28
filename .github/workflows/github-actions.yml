@@ -15,15 +15,23 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.21.4
-      - name: Install dependencies
-        run: sudo apt install gcc libc6-dev libx11-dev xorg-dev libxtst-dev libpng++-dev xcb libxcb-xkb-dev x11-xkb-utils libx11-xcb-dev libxkbcommon-x11-dev libxkbcommon-dev xsel xclip
-      - name: Build
-        run: go build -v ./cmd/gpp
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
           distribution: goreleaser
           version: latest
-          args: release --clean
+          args: "release --rm-dist --config=<(echo '
+builds:
+  - id: gpp
+    main: ./cmd/gpp/main.go
+    binary: gpp
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+  ')"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
