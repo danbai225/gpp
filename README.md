@@ -1,6 +1,13 @@
 # gpp
 
-gpp加速器，让你的加速器支持主机、mac、linux
+基于[sing-box](https://github.com/SagerNet/sing-box)的加速器，使用golang编写，支持windows、linux、macos
+
+- 使用vless+ws协议传输
+- 支持tcp、udp
+- http分流
+- gui客户端
+- 基于tun代理
+- 可用于路由器
 
 # 编译命令行
 
@@ -8,7 +15,11 @@ gpp加速器，让你的加速器支持主机、mac、linux
 
 # 编译GUI客户端
 
-`go install fyne.io/fyne/v2/cmd/fyne@latest`
+gui的客户端需要自建构建，需要安装`fyne`和`golang`，安装方法如下
+
+- 安装`golang`，[下载地址](https://golang.org/dl/)
+
+- 安装`fyne`，`go install fyne.io/fyne/v2/cmd/fyne@latest`
 
 使用`fyne.io`编译
 
@@ -50,6 +61,8 @@ fyne package -os darwin -icon logo.png
 
 ## 服务端启动！
 
+### 基于现有加速器共享加速（仅window && 部分加速器有效）
+
 例如我有某加速器，我在加速器上选择加速`英雄联盟国际服`
 
 然后我知道lol游戏文件夹中有个exe叫`client.exe`
@@ -57,6 +70,16 @@ fyne package -os darwin -icon logo.png
 那么我就可以这样启动服务端将我的服务端文件名修改为`client.exe`，记得放`config.json`到你的服务端同级目录下
 
 然后启动加速器加速如果可以选择加速模式可以选择进程模式（不行的话可以尝试路由模式）。
+
+### 基于优质线路vps服务器加速
+
+如果你有一台vps服务器，并且有优质的线路，那么你可以直接运行服务端，然后将你的vps服务器ip地址和端口号填入客户端配置文件中。
+
+快速安装服务端脚本（仅支持linux）
+
+```bash
+wget -O - https://raw.githubusercontent.com/danbai225/gpp/main/install.sh | bash
+```
 
 ## 客户端启动！
 
