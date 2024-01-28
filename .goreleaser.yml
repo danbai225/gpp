@@ -1,0 +1,11 @@
+builds:
+  - id: gpp
+    main: ./cmd/gpp/main.go
+    binary: gpp
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64

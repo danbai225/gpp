@@ -20,18 +20,6 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: "release --rm-dist --config=<(echo '
-builds:
-  - id: gpp
-    main: ./cmd/gpp/main.go
-    binary: gpp
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
-      - arm64
-  ')"
+          args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
