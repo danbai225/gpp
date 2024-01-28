@@ -84,7 +84,9 @@ fyne package -os darwin -icon logo.png
 #### 快速安装服务端脚本（仅支持linux）
 
 ```bash
-wget -O - https://raw.githubusercontent.com/danbai225/gpp/main/install.sh | bash
+wget https://raw.githubusercontent.com/danbai225/gpp/main/install.sh
+chmod +x install.sh
+./install.sh
 ```
 
 ## 客户端启动！
