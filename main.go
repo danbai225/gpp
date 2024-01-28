@@ -10,11 +10,11 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	logs "github.com/danbai225/go-logs"
 	"github.com/danbai225/gpp/core"
 	"github.com/getlantern/elevate"
 	box "github.com/sagernet/sing-box"
 	_ "image/png"
+	"log"
 	"os"
 	"runtime"
 	"sync"
@@ -87,23 +87,23 @@ func main() {
 	if mainApp.b != nil {
 		_ = mainApp.b.Close()
 	}
-	logs.Info("退出程序")
+	log.Println("退出程序")
 }
 func (a *App) Switch() {
 	a.lock.Lock()
 	defer a.lock.Unlock()
-	logs.Info("切换加速状态:", !a.run)
+	log.Println("切换加速状态:", !a.run)
 	if a.run {
 		err := a.b.Close()
 		if err != nil {
-			logs.Err(err)
+			log.Println(err)
 		}
 		a.btn.SetText("加速")
 		a.run = false
 	} else {
 		client, err := core.Client(a.config)
 		if err != nil {
-			logs.Err(err)
+			log.Println(err)
 			return
 		}
 		a.b = client
@@ -113,11 +113,11 @@ func (a *App) Switch() {
 		err = a.b.Start()
 		if err != nil {
 			a.btn.SetText("加速失败,重新加速")
-			logs.Err(err)
+			log.Println(err)
 			return
 		}
 		a.run = true
 		a.btn.SetText("停止")
 	}
-	logs.Info("加速状态:", a.run)
+	log.Println("加速状态:", a.run)
 }
