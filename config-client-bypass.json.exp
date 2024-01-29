@@ -1,0 +1,12 @@
+{
+	"default": {
+		"port": 5123,
+		"addr": "127.0.0.1",
+		"uuid": "xxxx-xxx-xxx-xxx-xxx"
+	},
+	"http": {
+		"port": 5123,
+		"addr": "127.0.0.1 or direct",
+		"uuid": "xxxx-xxx-xxx-xxx-xxx"
+	}
+}
