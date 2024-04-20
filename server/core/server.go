@@ -2,12 +2,13 @@ package core
 
 import (
 	"context"
+	"fmt"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/option"
 	"net/netip"
 )
 
-func Server(conf Config) error {
+func Server(conf Peer) error {
 	var instance, err = box.New(box.Options{
 		Context: context.Background(),
 		Options: option.Options{
@@ -46,14 +47,14 @@ func Server(conf Config) error {
 						},
 						Users: []option.VLESSUser{
 							{
-								Name: "danbai",
+								Name: "gpp",
 								UUID: conf.UUID,
 							},
 						},
 						Transport: &option.V2RayTransportOptions{
 							Type: "ws",
 							WebsocketOptions: option.V2RayWebsocketOptions{
-								Path:                "/test",
+								Path:                fmt.Sprintf("/%s", conf.UUID),
 								Headers:             nil,
 								MaxEarlyData:        2048,
 								EarlyDataHeaderName: "Sec-WebSocket-Protocol",
