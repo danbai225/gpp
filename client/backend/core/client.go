@@ -1,24 +1,24 @@
 package core
 
 import (
+	"client/backend/config"
 	"context"
 	"fmt"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/option"
-	"github.com/sagernet/sing/common/auth"
 	"net/netip"
 	"os"
 )
 
-func Client(conf Config) (*box.Box, error) {
-	var deferPeer Peer
-	var httpPeer Peer
-	if conf.Default.Addr != "" {
-		deferPeer = conf.Default
+func Client(conf config.Config) (*box.Box, error) {
+	var gamePeer *config.Peer
+	var httpPeer *config.Peer
+	if conf.HTTP.Addr != "" {
+		gamePeer = conf.GamePeers
 		httpPeer = conf.HTTP
-	} else if conf.Peer.Addr != "" {
-		deferPeer = conf.Peer
-		httpPeer = deferPeer
+	} else {
+		gamePeer = conf.GamePeers
+		httpPeer = conf.GamePeers
 	}
 	home, _ := os.UserHomeDir()
 	options := box.Options{
@@ -57,7 +57,7 @@ func Client(conf Config) (*box.Box, error) {
 						InterfaceName: "utun225",
 						MTU:           9000,
 						Inet4Address: option.Listable[netip.Prefix]{
-							netip.MustParsePrefix("172.19.0.1/30"),
+							netip.MustParsePrefix("172.19.225.1/30"),
 						},
 						AutoRoute:              true,
 						StrictRoute:            false,
@@ -80,12 +80,6 @@ func Client(conf Config) (*box.Box, error) {
 								SniffEnabled: true,
 							},
 						},
-						Users: []auth.User{
-							{
-								Username: "admin",
-								Password: conf.UUID,
-							},
-						},
 					},
 				},
 			},
@@ -93,11 +87,11 @@ func Client(conf Config) (*box.Box, error) {
 				AutoDetectInterface: true,
 				GeoIP: &option.GeoIPOptions{
 					Path:        fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "data-a"),
-					DownloadURL: "https://ghps.cc/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
+					DownloadURL: "https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
 				},
 				Geosite: &option.GeositeOptions{
 					Path:        fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "data-b"),
-					DownloadURL: "https://ghps.cc/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
+					DownloadURL: "https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
 				},
 				Rules: []option.Rule{
 					{
@@ -136,11 +130,11 @@ func Client(conf Config) (*box.Box, error) {
 					Tag:  "vless-out",
 					VLESSOptions: option.VLESSOutboundOptions{
 						ServerOptions: option.ServerOptions{
-							Server:     deferPeer.Addr,
-							ServerPort: deferPeer.Port,
+							Server:     gamePeer.Addr,
+							ServerPort: gamePeer.Port,
 						},
-						UUID: deferPeer.UUID,
-						Multiplex: &option.MultiplexOptions{
+						UUID: gamePeer.UUID,
+						Multiplex: &option.OutboundMultiplexOptions{
 							Enabled:        true,
 							Protocol:       "smux",
 							MaxConnections: 5,
@@ -151,7 +145,7 @@ func Client(conf Config) (*box.Box, error) {
 						Transport: &option.V2RayTransportOptions{
 							Type: "ws",
 							WebsocketOptions: option.V2RayWebsocketOptions{
-								Path:                "/test",
+								Path:                fmt.Sprintf("/%s", gamePeer.UUID),
 								MaxEarlyData:        2048,
 								EarlyDataHeaderName: "Sec-WebSocket-Protocol",
 							},
@@ -184,7 +178,7 @@ func Client(conf Config) (*box.Box, error) {
 						ServerPort: httpPeer.Port,
 					},
 					UUID: httpPeer.UUID,
-					Multiplex: &option.MultiplexOptions{
+					Multiplex: &option.OutboundMultiplexOptions{
 						Enabled:        true,
 						Protocol:       "smux",
 						MaxConnections: 5,
@@ -195,7 +189,7 @@ func Client(conf Config) (*box.Box, error) {
 					Transport: &option.V2RayTransportOptions{
 						Type: "ws",
 						WebsocketOptions: option.V2RayWebsocketOptions{
-							Path:                "/test",
+							Path:                fmt.Sprintf("/%s", httpPeer.UUID),
 							MaxEarlyData:        2048,
 							EarlyDataHeaderName: "Sec-WebSocket-Protocol",
 						},

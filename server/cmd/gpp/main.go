@@ -1,21 +1,27 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/danbai225/gpp/core"
-	box "github.com/sagernet/sing-box"
+	"github.com/google/uuid"
+	"io"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 )
+
+type ip struct {
+	IP string `json:"ip"`
+}
 
 func main() {
 	path := "config.json"
 	home, _ := os.UserHomeDir()
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: gpp [server|client] [config.json]")
-		return
-	} else if len(os.Args) > 2 {
-		path = os.Args[2]
+	if len(os.Args) > 1 {
+		path = os.Args[1]
 	} else {
 		_, err := os.Stat(path)
 		if err != nil {
@@ -24,23 +30,51 @@ func main() {
 	}
 	bytes, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Println("read config err:", err)
+		fmt.Println("read config err:", err, path)
+		return
 	}
-	config := core.Config{}
+	config := core.Peer{}
 	_ = json.Unmarshal(bytes, &config)
-	if os.Args[1] == "server" {
-		err = core.Server(config)
-	} else if os.Args[1] == "client" {
-		var b *box.Box
-		b, err = core.Client(config)
-		if err == nil {
-			err = b.Start()
-		}
+	if config.Port == 0 {
+		config.Port = 34555
 	}
+	if config.Addr == "" {
+		config.Addr = "0.0.0.0"
+	}
+	if config.UUID == "" {
+		config.UUID = uuid.New().String()
+	}
+	err = core.Server(config)
 	if err != nil {
 		fmt.Println("run err:", err)
 	} else {
-		fmt.Println("启动成功！！！")
-		select {}
+		fmt.Println("starting success！！！")
+		ipStr := ""
+		req, _ := http.NewRequest("GET", "https://api.ip.sb/jsonip", nil)
+		req.Header.Set("User-Agent", "gpp")
+		resp, err2 := http.DefaultClient.Do(req)
+		if err2 != nil {
+			fmt.Println("get ip err:", err2)
+		} else {
+			all, _ := io.ReadAll(resp.Body)
+			_ = resp.Body.Close()
+			i := ip{}
+			_ = json.Unmarshal(all, &i)
+			ipStr = i.IP
+		}
+		if ipStr != "" {
+			fmt.Println("server ip:", ipStr)
+			// 进行Base64编码
+			encoded := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("gpp://vless@%s:%d/%s", ipStr, config.Port, config.UUID)))
+			fmt.Println("server token:", encoded)
+		} else {
+			fmt.Println("get ip err, please check your network")
+		}
+		sigCh := make(chan os.Signal, 1)
+		signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+		s := <-sigCh
+		fmt.Printf("Received signal: %v\n", s)
+		fmt.Println("Exiting...")
+		os.Exit(0)
 	}
 }

@@ -16,7 +16,7 @@ if [ ! -d "$INSTALL_PATH" ]; then
   echo "Directory $INSTALL_PATH created"
 fi
 # 切换到安装目录
-cd "$INSTALL_PATH"
+cd "$INSTALL_PATH" || exit
 echo "Changed to directory: $PWD"
 UUID=$(uuidgen)
 cat << EOF > config.json
