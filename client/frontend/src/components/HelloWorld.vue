@@ -23,6 +23,9 @@ function greet() {
       <button class="btn" @click="greet">Greet</button>
     </div>
   </main>
+  <n-button type="primary">
+    Primary
+  </n-button>
 </template>
 
 <style scoped>
