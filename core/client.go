@@ -93,11 +93,11 @@ func Client(conf Config) (*box.Box, error) {
 				AutoDetectInterface: true,
 				GeoIP: &option.GeoIPOptions{
 					Path:        fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "data-a"),
-					DownloadURL: "https://ghps.cc/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
+					DownloadURL: "https://ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
 				},
 				Geosite: &option.GeositeOptions{
 					Path:        fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "data-b"),
-					DownloadURL: "https://ghps.cc/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
+					DownloadURL: "https://ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
 				},
 				Rules: []option.Rule{
 					{
