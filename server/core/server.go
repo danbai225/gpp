@@ -19,23 +19,6 @@ func Server(conf Peer) error {
 				Timestamp:    true,
 				DisableColor: true,
 			},
-			DNS: &option.DNSOptions{
-				Servers: []option.DNSServerOptions{
-					{
-						Tag:     "ali",
-						Address: "223.5.5.5",
-					},
-				},
-				Rules:          []option.DNSRule{},
-				Final:          "",
-				ReverseMapping: false,
-				FakeIP:         nil,
-				DNSClientOptions: option.DNSClientOptions{
-					DisableCache:     false,
-					DisableExpire:    false,
-					IndependentCache: false,
-				},
-			},
 			Inbounds: []option.Inbound{
 				{
 					Type: "vless",
@@ -59,6 +42,11 @@ func Server(conf Peer) error {
 								MaxEarlyData:        2048,
 								EarlyDataHeaderName: "Sec-WebSocket-Protocol",
 							},
+						},
+						Multiplex: &option.InboundMultiplexOptions{
+							Enabled: true,
+							Padding: false,
+							Brutal:  nil,
 						},
 					},
 				},
