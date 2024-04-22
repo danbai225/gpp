@@ -12,7 +12,6 @@ import (
 )
 
 func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
-	fmt.Println(gamePeer.Addr, gamePeer.UUID, gamePeer.Port)
 	home, _ := os.UserHomeDir()
 	options := box.Options{
 		Context: context.Background(),
