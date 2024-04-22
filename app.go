@@ -27,12 +27,11 @@ func NewApp() *App {
 	app := App{
 		conf: &conf,
 	}
-	go app.testPing()
 	return &app
 }
 func (a *App) testPing() {
 	a.PingAll()
-	tick := time.Tick(time.Second * 30)
+	tick := time.Tick(time.Second * 60)
 	for range tick {
 		a.PingAll()
 	}
@@ -50,6 +49,7 @@ func (a *App) startup(ctx context.Context) {
 	a.conf = loadConfig
 	a.gamePeer = a.conf.PeerList[0]
 	a.httpPeer = a.conf.PeerList[0]
+	go a.testPing()
 }
 func (a *App) PingAll() {
 	group := sync.WaitGroup{}
@@ -165,7 +165,7 @@ func pingPort(host string, port uint16) uint {
 		Host:     host,
 		Port:     int(port),
 		Counter:  3,
-		Interval: 1,
+		Interval: time.Millisecond * 200,
 		Timeout:  time.Second,
 	})
 	start := tcPing.Start()

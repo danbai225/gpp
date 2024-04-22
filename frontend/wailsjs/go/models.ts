@@ -6,6 +6,7 @@ export namespace config {
 	    port: number;
 	    addr: string;
 	    uuid: string;
+	    ping: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Peer(source);
@@ -18,6 +19,7 @@ export namespace config {
 	        this.port = source["port"];
 	        this.addr = source["addr"];
 	        this.uuid = source["uuid"];
+	        this.ping = source["ping"];
 	    }
 	}
 

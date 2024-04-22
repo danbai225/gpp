@@ -12,6 +12,5 @@ declare module 'vue' {
     NButton: typeof import('naive-ui')['NButton']
     NProgress: typeof import('naive-ui')['NProgress']
     NSpace: typeof import('naive-ui')['NSpace']
-    Progress: typeof import('./src/views/Index.vue')['default']
   }
 }

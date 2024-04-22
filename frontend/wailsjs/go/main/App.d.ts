@@ -5,7 +5,11 @@ import {main} from '../models';
 
 export function Add(arg1:string):Promise<string>;
 
+export function Del(arg1:string):Promise<string>;
+
 export function List():Promise<Array<config.Peer>>;
+
+export function PingAll():Promise<void>;
 
 export function SetPeer(arg1:string,arg2:string):Promise<string>;
 

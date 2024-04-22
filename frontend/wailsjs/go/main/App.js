@@ -6,8 +6,16 @@ export function Add(arg1) {
   return window['go']['main']['App']['Add'](arg1);
 }
 
+export function Del(arg1) {
+  return window['go']['main']['App']['Del'](arg1);
+}
+
 export function List() {
   return window['go']['main']['App']['List']();
+}
+
+export function PingAll() {
+  return window['go']['main']['App']['PingAll']();
 }
 
 export function SetPeer(arg1, arg2) {
