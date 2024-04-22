@@ -1,17 +1,12 @@
 package main
 
 import (
+	"client/backend/client"
 	"client/backend/config"
 	"context"
-	"fmt"
-	"github.com/getlantern/elevate"
+	box "github.com/sagernet/sing-box"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"os"
-	"os/exec"
 )
-
-var home, _ = os.UserHomeDir()
-var boxPath = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "box.exe")
 
 // App struct
 type App struct {
@@ -19,7 +14,7 @@ type App struct {
 	conf     *config.Config
 	gamePeer *config.Peer
 	httpPeer *config.Peer
-	boxCmd   *exec.Cmd
+	box      *box.Box
 }
 
 // NewApp creates a new App application struct
@@ -30,8 +25,6 @@ func NewApp() *App {
 	}
 }
 
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	loadConfig, err := config.LoadConfig()
@@ -49,35 +42,30 @@ func (a *App) startup(ctx context.Context) {
 
 // Start 启动加速
 func (a *App) Start() string {
-	if a.boxCmd != nil && a.boxCmd.ProcessState != nil {
+	if a.box != nil {
 		return "running"
 	}
-	a.boxCmd = elevate.Command(boxPath)
-	a.boxCmd.Stdout = os.Stdout
-	a.boxCmd.Stderr = os.Stderr
-	a.boxCmd.Stdin = os.Stdin
-	err := a.boxCmd.Start()
+	var err error
+	a.box, err = client.Client(a.gamePeer, a.httpPeer)
 	if err != nil {
 		return err.Error()
 	}
-	go func() {
-		_ = a.boxCmd.Wait()
-	}()
+	err = a.box.Start()
+	if err != nil {
+		return err.Error()
+	}
 	return "ok"
 }
 
 // Stop 停止加速
 func (a *App) Stop() string {
-	if a.boxCmd == nil || a.boxCmd.ProcessState == nil {
+	if a.box == nil {
 		return "not running"
 	}
-	err := a.boxCmd.Process.Kill()
+	err := a.box.Close()
 	if err != nil {
 		return err.Error()
 	}
+	a.box = nil
 	return "ok"
-}
-
-func DownloadAssets() string {
-	return ""
 }
