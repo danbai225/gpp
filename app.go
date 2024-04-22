@@ -31,6 +31,7 @@ func NewApp() *App {
 	return &app
 }
 func (a *App) testPing() {
+	a.PingAll()
 	tick := time.Tick(time.Second * 30)
 	for range tick {
 		a.PingAll()
