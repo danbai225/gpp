@@ -2,3 +2,5 @@ build/bin
 node_modules
 frontend/dist
 run.log
+dist/
+config.json
