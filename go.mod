@@ -5,6 +5,7 @@ go 1.22
 toolchain go1.22.1
 
 require (
+	github.com/cloverstd/tcping v0.1.1
 	github.com/getlantern/elevate v0.0.0-20220903142053-479ab992b264
 	github.com/sagernet/sing-box v1.8.11
 	github.com/wailsapp/wails/v2 v2.8.1

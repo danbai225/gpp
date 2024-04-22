@@ -15,6 +15,7 @@ type Peer struct {
 	Port     uint16 `json:"port"`
 	Addr     string `json:"addr"`
 	UUID     string `json:"uuid"`
+	Ping     uint   `json:"ping"`
 }
 type Config struct {
 	PeerList []*Peer `json:"peer_list"`

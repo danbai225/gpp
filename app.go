@@ -4,8 +4,12 @@ import (
 	"client/backend/client"
 	"client/backend/config"
 	"context"
+	"fmt"
+	"github.com/cloverstd/tcping/ping"
 	box "github.com/sagernet/sing-box"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"sync"
+	"time"
 )
 
 // App struct
@@ -20,11 +24,18 @@ type App struct {
 // NewApp creates a new App application struct
 func NewApp() *App {
 	conf := config.Config{}
-	return &App{
+	app := App{
 		conf: &conf,
 	}
+	go app.testPing()
+	return &app
 }
-
+func (a *App) testPing() {
+	tick := time.Tick(time.Second * 30)
+	for range tick {
+		a.PingAll()
+	}
+}
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	loadConfig, err := config.LoadConfig()
@@ -38,6 +49,18 @@ func (a *App) startup(ctx context.Context) {
 	a.conf = loadConfig
 	a.gamePeer = a.conf.PeerList[0]
 	a.httpPeer = a.conf.PeerList[0]
+}
+func (a *App) PingAll() {
+	group := sync.WaitGroup{}
+	for i := range a.conf.PeerList {
+		group.Add(1)
+		peer := a.conf.PeerList[i]
+		go func() {
+			defer group.Done()
+			peer.Ping = pingPort(peer.Addr, peer.Port)
+		}()
+	}
+	group.Wait()
 }
 
 type Status struct {
@@ -65,8 +88,26 @@ func (a *App) Add(token string) string {
 	if err != nil {
 		return err.Error()
 	}
+	for _, p := range a.conf.PeerList {
+		if p.Name == peer.Name {
+			return fmt.Sprintf("peer %s already exists", peer.Name)
+		}
+	}
 	a.conf.PeerList = append(a.conf.PeerList, peer)
 	err = config.SaveConfig(a.conf)
+	if err != nil {
+		return err.Error()
+	}
+	return "ok"
+}
+func (a *App) Del(Name string) string {
+	for i, peer := range a.conf.PeerList {
+		if peer.Name == Name {
+			a.conf.PeerList = append(a.conf.PeerList[:i], a.conf.PeerList[i+1:]...)
+			break
+		}
+	}
+	err := config.SaveConfig(a.conf)
 	if err != nil {
 		return err.Error()
 	}
@@ -116,4 +157,18 @@ func (a *App) Stop() string {
 	}
 	a.box = nil
 	return "ok"
+}
+func pingPort(host string, port uint16) uint {
+	tcPing := ping.NewTCPing()
+	tcPing.SetTarget(&ping.Target{
+		Host:     host,
+		Port:     int(port),
+		Counter:  3,
+		Interval: 1,
+		Timeout:  time.Second,
+	})
+	start := tcPing.Start()
+	<-start
+	result := tcPing.Result()
+	return uint(result.Avg().Milliseconds())
 }
