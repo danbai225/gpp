@@ -61,7 +61,7 @@ func (a *App) Start() string {
 	go func() {
 		_ = a.boxCmd.Wait()
 	}()
-	return ""
+	return "ok"
 }
 
 // Stop 停止加速
@@ -73,7 +73,7 @@ func (a *App) Stop() string {
 	if err != nil {
 		return err.Error()
 	}
-	return ""
+	return "ok"
 }
 
 func DownloadAssets() string {
