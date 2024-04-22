@@ -3,6 +3,7 @@ package main
 import (
 	"client/backend/client"
 	"client/backend/config"
+	"client/backend/data"
 	"context"
 	"fmt"
 	"github.com/cloverstd/tcping/ping"
@@ -64,14 +65,8 @@ func (a *App) PingAll() {
 	group.Wait()
 }
 
-type Status struct {
-	Running  bool
-	GamePeer *config.Peer
-	HttpPeer *config.Peer
-}
-
-func (a *App) Status() *Status {
-	return &Status{
+func (a *App) Status() *data.Status {
+	return &data.Status{
 		Running:  a.box != nil,
 		GamePeer: a.gamePeer,
 		HttpPeer: a.httpPeer,

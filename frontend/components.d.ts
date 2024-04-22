@@ -10,7 +10,11 @@ declare module 'vue' {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     Layout: typeof import('./src/components/Layout.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
+    NGradientText: typeof import('naive-ui')['NGradientText']
+    NInput: typeof import('naive-ui')['NInput']
+    NModal: typeof import('naive-ui')['NModal']
     NProgress: typeof import('naive-ui')['NProgress']
+    NSelect: typeof import('naive-ui')['NSelect']
     NSpace: typeof import('naive-ui')['NSpace']
   }
 }
