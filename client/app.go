@@ -54,6 +54,9 @@ func (a *App) Start() string {
 		return "running"
 	}
 	a.boxCmd = elevate.Command(boxPath)
+	a.boxCmd.Stdout = os.Stdout
+	a.boxCmd.Stderr = os.Stderr
+	a.boxCmd.Stdin = os.Stdin
 	err := a.boxCmd.Start()
 	if err != nil {
 		return err.Error()
@@ -66,7 +69,7 @@ func (a *App) Start() string {
 
 // Stop 停止加速
 func (a *App) Stop() string {
-	if a.boxCmd == nil {
+	if a.boxCmd == nil || a.boxCmd.ProcessState == nil {
 		return "not running"
 	}
 	err := a.boxCmd.Process.Kill()
