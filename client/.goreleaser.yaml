@@ -1,7 +1,7 @@
 builds:
-  - id: gpp
-    main: ./cmd/gpp/main.go
-    binary: gpp
+  - id: box
+    main: ./cmd/box/box.go
+    binary: box
     goos:
       - linux
       - darwin

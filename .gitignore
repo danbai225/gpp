@@ -20,9 +20,3 @@
 # Go workspace file
 go.work
 /.idea/
-client/config.json
-#exe
-gpp
-main
-gpp.exe
-main.exe

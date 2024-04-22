@@ -1,4 +1,4 @@
-package core
+package main
 
 import (
 	"client/backend/config"
@@ -8,9 +8,33 @@ import (
 	"github.com/sagernet/sing-box/option"
 	"net/netip"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
+func main() {
+	loadConfig, err := config.LoadConfig()
+	if err != nil {
+		panic(err)
+	}
+	gamePeer := loadConfig.PeerList[0]
+	httpPeer := loadConfig.PeerList[0]
+	_box, err := Client(gamePeer, httpPeer)
+	if err != nil {
+		panic(err)
+	}
+	err = _box.Start()
+	if err != nil {
+		panic(err)
+	}
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	s := <-sigCh
+	fmt.Printf("Received signal: %v\n", s)
+	fmt.Println("Exiting...")
+	os.Exit(0)
+}
 func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 	fmt.Println(gamePeer.Addr, gamePeer.UUID, gamePeer.Port)
 	home, _ := os.UserHomeDir()
