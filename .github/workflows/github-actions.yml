@@ -1,9 +1,6 @@
 name: releaser
-
 on:
   push:
-    branches:
-      - 'dev'
     tags:
       - 'v*'
 
