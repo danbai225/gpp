@@ -40,6 +40,54 @@ func (a *App) startup(ctx context.Context) {
 	a.httpPeer = a.conf.PeerList[0]
 }
 
+type Status struct {
+	Running  bool
+	GamePeer *config.Peer
+	HttpPeer *config.Peer
+}
+
+func (a *App) Status() *Status {
+	return &Status{
+		Running:  a.box != nil,
+		GamePeer: a.gamePeer,
+		HttpPeer: a.httpPeer,
+	}
+}
+
+func (a *App) List() []*config.Peer {
+	return a.conf.PeerList
+}
+func (a *App) Add(token string) string {
+	if a.conf.PeerList == nil {
+		a.conf.PeerList = make([]*config.Peer, 0)
+	}
+	err, peer := config.ParsePeer(token)
+	if err != nil {
+		return err.Error()
+	}
+	a.conf.PeerList = append(a.conf.PeerList, peer)
+	err = config.SaveConfig(a.conf)
+	if err != nil {
+		return err.Error()
+	}
+	return "ok"
+}
+func (a *App) SetPeer(game, http string) string {
+	for _, peer := range a.conf.PeerList {
+		if peer.Name == game {
+			a.gamePeer = peer
+			break
+		}
+	}
+	for _, peer := range a.conf.PeerList {
+		if peer.Name == http {
+			a.httpPeer = peer
+			break
+		}
+	}
+	return "ok"
+}
+
 // Start 启动加速
 func (a *App) Start() string {
 	if a.box != nil {
