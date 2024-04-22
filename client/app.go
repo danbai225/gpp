@@ -45,7 +45,6 @@ func (a *App) startup(ctx context.Context) {
 	a.conf = loadConfig
 	a.gamePeer = a.conf.PeerList[0]
 	a.httpPeer = a.conf.PeerList[0]
-	a.Start()
 }
 
 // Start 启动加速
