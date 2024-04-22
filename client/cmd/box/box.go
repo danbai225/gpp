@@ -19,7 +19,7 @@ func main() {
 		panic(err)
 	}
 	gamePeer := loadConfig.PeerList[0]
-	httpPeer := loadConfig.PeerList[1]
+	httpPeer := loadConfig.PeerList[0]
 	_box, err := Client(gamePeer, httpPeer)
 	if err != nil {
 		panic(err)

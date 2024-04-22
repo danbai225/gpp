@@ -3,10 +3,15 @@ package main
 import (
 	"client/backend/config"
 	"context"
+	"fmt"
 	"github.com/getlantern/elevate"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"os"
 	"os/exec"
 )
+
+var home, _ = os.UserHomeDir()
+var boxPath = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "box.exe")
 
 // App struct
 type App struct {
@@ -39,7 +44,8 @@ func (a *App) startup(ctx context.Context) {
 	}
 	a.conf = loadConfig
 	a.gamePeer = a.conf.PeerList[0]
-	a.httpPeer = a.conf.PeerList[1]
+	a.httpPeer = a.conf.PeerList[0]
+	a.Start()
 }
 
 // Start 启动加速
@@ -47,7 +53,7 @@ func (a *App) Start() string {
 	if a.boxCmd != nil && a.boxCmd.ProcessState != nil {
 		return "running"
 	}
-	a.boxCmd = elevate.Command("box")
+	a.boxCmd = elevate.Command(boxPath)
 	err := a.boxCmd.Start()
 	if err != nil {
 		return err.Error()
@@ -67,5 +73,9 @@ func (a *App) Stop() string {
 	if err != nil {
 		return err.Error()
 	}
+	return ""
+}
+
+func DownloadAssets() string {
 	return ""
 }
