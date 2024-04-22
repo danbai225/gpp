@@ -6,7 +6,7 @@
           <n-progress type="circle"
                       :status="percentageRef<=25?'error':percentageRef<=50?'warning':percentageRef<=75?'info':'success'"
                       :percentage="percentageRef">
-            {{ percentageRef === 100 ? '加速完成...' : percentageRef === 0 ? '未开始' : '正在加速' }}
+            {{ percentageRef === 100 ? '加速完成' : percentageRef === 0 ? '未开始' : '正在加速' }}
           </n-progress>
         </n-space>
         <n-space>
