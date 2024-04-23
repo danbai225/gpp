@@ -1,0 +1,12 @@
+builds:
+  - id: box
+    dir: server
+    main: ./cmd/gpp/main.go
+    binary: box
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64

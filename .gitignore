@@ -20,6 +20,9 @@
 # Go workspace file
 go.work
 /.idea/
-*.log
-*.json
-gpp
+build/bin
+node_modules
+frontend/dist
+run.log
+dist/
+config.json
