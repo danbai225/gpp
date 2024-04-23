@@ -12,18 +12,22 @@
           >
             <n-space vertical size="small">
               {{ percentageRef === 100 ? '加速完成' : percentageRef === 0 ? '未开始' : '正在加速' }}
-              <p @click="getList()">
-                Game:{{ gamePeer === undefined ? '未选择' : gamePeer.name }}
-                <n-gradient-text v-if="gamePeer" :type="gamePeer.ping<60?'success':gamePeer.ping<100?'warning':'error'">
-                  {{ gamePeer.ping }}
-                </n-gradient-text>
-              </p>
-              <p @click="getList()">
-                Http:{{ httpPeer === undefined ? '未选择' : httpPeer.name }}
-                <n-gradient-text v-if="httpPeer" :type="httpPeer.ping<60?'success':httpPeer.ping<100?'warning':'error'">
-                  {{ httpPeer.ping }}
-                </n-gradient-text>
-              </p>
+              <n-space vertical size="small" v-if="showGameHttpInfo">
+                <p @click="getList()">
+                  Game:{{ gamePeer === undefined ? '未选择' : gamePeer.name }}
+                  <n-gradient-text v-if="gamePeer"
+                                   :type="gamePeer.ping<60?'success':gamePeer.ping<100?'warning':'error'">
+                    {{ gamePeer.ping }}
+                  </n-gradient-text>
+                </p>
+                <p @click="getList()">
+                  Http:{{ httpPeer === undefined ? '未选择' : httpPeer.name }}
+                  <n-gradient-text v-if="httpPeer"
+                                   :type="httpPeer.ping<60?'success':httpPeer.ping<100?'warning':'error'">
+                    {{ httpPeer.ping }}
+                  </n-gradient-text>
+                </p>
+              </n-space>
             </n-space>
           </n-progress>
         </n-space>
@@ -86,6 +90,7 @@ import {ref, defineComponent, Ref, reactive, onMounted} from 'vue'
 import {Add, List, SetPeer, Start, Status, Stop} from "../../wailsjs/go/main/App";
 import {SelectOption, SelectGroupOption} from 'naive-ui'
 import {config, data} from "../../wailsjs/go/models";
+import {onBeforeMount} from "@vue/runtime-core";
 
 const percentageRef = ref(0)
 const state = ref(false)
@@ -101,20 +106,43 @@ const httpValue = ref()
 const gamePeer: Ref<any> | undefined = ref()
 const httpPeer: Ref<any> | undefined = ref()
 
+const showGameHttpInfo = ref(true)
+
 
 const newUrl = ref()
 
-
+let time = ref()
 onMounted(() => {
   getStatus()
+  time.value = setInterval(() => {
+    getStatus()
+  }, 3000);
 })
+
+onBeforeMount(() => {
+  clearInterval(time.value)
+  time.value = null;
+})
+
+const getStarInfo = () => {
+  Start().then(res => {
+    console.log(res)
+    if (res === "ok") {
+      showGameHttpInfo.value = false
+    } else if (res === "running") {
+      showGameHttpInfo.value = true
+      return
+    }
+  })
+}
 
 const start = () => {
   btnDisabled.value = true
+  showGameHttpInfo.value = false
   btnText.value = '加速中.'
   Start().then(res => {
     state.value = true
-    console.log('startRes', res)
+    // console.log('startRes', res)
     let timer = setInterval(() => {
       percentageRef.value += 10
       if (percentageRef.value === 100) {
@@ -129,8 +157,9 @@ const stop = () => {
   Stop().then(res => {
     percentageRef.value = 0
     state.value = false
+    showGameHttpInfo.value = true
     btnText.value = '开始加速'
-    console.log('stopRes', res)
+    // console.log('stopRes', res)
   })
 }
 // Z3BwOi8vdmxlc3NAMTIzLjU4LjIxMi4xOTU6MzQ1NTYvYmFkYjE3ZWYtZWIyMi00ZTAzLTliMTctZWZlYjIyNGUwM2U3
@@ -152,7 +181,6 @@ const getStatus = () => {
     console.log('StatusRes', res)
     gamePeer.value = res.game_peer
     httpPeer.value = res.http_peer
-    console.log("gamePeer", gamePeer.value)
   })
 }
 
