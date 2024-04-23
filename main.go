@@ -16,9 +16,6 @@ func main() {
 	if _, err := os.Stat(".dev"); err != nil {
 		if len(os.Args) == 1 {
 			command := elevate.Command(os.Args[0], "sudo")
-			command.Stderr = os.Stderr
-			command.Stdout = os.Stdout
-			command.Stdin = os.Stdin
 			_ = command.Run()
 			os.Exit(0)
 		}
