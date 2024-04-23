@@ -35,9 +35,6 @@ jobs:
       matrix:
         build:
           - name: 'App'
-            platform: 'linux/amd64'
-            os: 'ubuntu-latest'
-          - name: 'App'
             platform: 'windows/amd64'
             os: 'windows-latest'
           - name: 'App'
