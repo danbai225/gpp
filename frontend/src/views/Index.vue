@@ -17,13 +17,13 @@
                 <n-gradient-text v-if="gamePeer" :type="gamePeer.ping<60?'success':gamePeer.ping<100?'warning':'error'">
                   {{ gamePeer.ping }}
                 </n-gradient-text>
-              </p >
+              </p>
               <p @click="getList()">
                 Http:{{ httpPeer === undefined ? '未选择' : httpPeer.name }}
                 <n-gradient-text v-if="httpPeer" :type="httpPeer.ping<60?'success':httpPeer.ping<100?'warning':'error'">
                   {{ httpPeer.ping }}
                 </n-gradient-text>
-              </p >
+              </p>
             </n-space>
           </n-progress>
         </n-space>
@@ -70,7 +70,7 @@
           />
           <br>
           <n-input
-              v-model:value="Token"
+              v-model:value="newUrl"
               type="textarea"
               placeholder="导入新连接"
           />
@@ -93,16 +93,16 @@ const btnText = ref('开始加速')
 const btnDisabled = ref(false)
 const showModal = ref(false)
 const httpDialog = ref(false)
-let gameOpt = ref(Array<SelectOption | SelectGroupOption>())
-let httpOpt = ref(Array<SelectOption | SelectGroupOption>())
-let gameValue = ""
-let httpValue = ""
+const gameOpt = ref(Array<SelectOption | SelectGroupOption>())
+const httpOpt = ref(Array<SelectOption | SelectGroupOption>())
+const gameValue = ref()
+const httpValue = ref()
 
-let gamePeer: config.Peer | undefined
-let httpPeer: config.Peer | undefined
+const gamePeer: Ref<any> | undefined = ref()
+const httpPeer: Ref<any> | undefined = ref()
 
 
-let Token = ref()
+const newUrl = ref()
 
 
 onMounted(() => {
@@ -150,19 +150,27 @@ const getList = () => {
 const getStatus = () => {
   Status().then(res => {
     console.log('StatusRes', res)
-    gamePeer = res.game_peer
-    httpPeer = res.http_peer
-    console.log("gamePeer", gamePeer)
+    gamePeer.value = res.game_peer
+    httpPeer.value = res.http_peer
+    console.log("gamePeer", gamePeer.value)
   })
 }
 
 const submitCallback = () => {
-  if (Token.value !== "") {
-    Add(Token.value).then(res => {
+  if (newUrl.value !== "") {
+    Add(newUrl.value).then(res => {
       console.log(res)
     })
-  } else if (gameValue !== '' && httpValue !== '') {
-    SetPeer(gameValue, httpValue).then(res => {
+  } else if (gameValue.value !== '' && httpValue.value !== '') {
+    SetPeer(gameValue.value, httpValue.value).then(res => {
+      console.log(res)
+      getStatus()
+    })
+  } else if (newUrl.value !== '' && gameValue.value !== '' && httpValue.value !== '') {
+    Add(newUrl.value).then(res => {
+      console.log(res)
+    })
+    SetPeer(gameValue.value, httpValue.value).then(res => {
       console.log(res)
       getStatus()
     })

@@ -19,7 +19,8 @@ func main() {
 			command.Stderr = os.Stderr
 			command.Stdout = os.Stdout
 			command.Stdin = os.Stdin
-			_ = command.Run()
+			_ = command.Start()
+			_ = command.Wait()
 			os.Exit(0)
 		}
 	}
@@ -29,11 +30,10 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:             "gpp",
-		Width:             360,
-		Height:            480,
-		DisableResize:     true,
-		HideWindowOnClose: true,
+		Title:         "gpp",
+		Width:         360,
+		Height:        480,
+		DisableResize: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

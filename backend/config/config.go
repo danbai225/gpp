@@ -55,12 +55,18 @@ func SaveConfig(config *Config) error {
 	return os.WriteFile(path, file, 0644)
 }
 func ParsePeer(token string) (error, *Peer) {
+	split := strings.Split(token, "#")
+	name := ""
+	if len(split) == 2 {
+		token = split[0]
+		name = split[1]
+	}
 	tokenBytes, err := base64.StdEncoding.DecodeString(token)
 	if err != nil {
 		return err, nil
 	}
 	token = string(tokenBytes)
-	split := strings.Split(token, "@")
+	split = strings.Split(token, "@")
 	protocol := strings.ReplaceAll(split[0], "gpp://", "")
 	switch protocol {
 	case "vless":
@@ -79,8 +85,9 @@ func ParsePeer(token string) (error, *Peer) {
 		return fmt.Errorf("invalid token: %s", token), nil
 	}
 	uuid := split[1]
-	split = strings.Split(token, "#")
-	name := fmt.Sprintf("%s:%d", addr.Addr().String(), addr.Port())
+	if name == "" {
+		name = fmt.Sprintf("%s:%d", addr.Addr().String(), addr.Port())
+	}
 	if len(split) == 2 {
 		name = split[1]
 	}

@@ -2,7 +2,7 @@ builds:
   - id: box
     dir: server
     main: ./cmd/gpp/main.go
-    binary: box
+    binary: gpp
     goos:
       - linux
       - darwin
