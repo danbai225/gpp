@@ -26,3 +26,4 @@ frontend/dist
 run.log
 dist/
 config.json
+.dev
