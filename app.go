@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/cloverstd/tcping/ping"
 	box "github.com/sagernet/sing-box"
+	"github.com/shirou/gopsutil/v3/net"
 	"sync"
 	"time"
 )
@@ -68,11 +69,20 @@ func (a *App) PingAll() {
 }
 
 func (a *App) Status() *data.Status {
-	return &data.Status{
+	status := data.Status{
 		Running:  a.box != nil,
 		GamePeer: a.gamePeer,
 		HttpPeer: a.httpPeer,
 	}
+
+	counters, _ := net.IOCounters(true)
+	for _, counter := range counters {
+		if counter.Name == "utun225" {
+			status.Up = counter.BytesRecv
+			status.Down = counter.BytesSent
+		}
+	}
+	return &status
 }
 
 func (a *App) List() []*config.Peer {
