@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/cloverstd/tcping/ping"
 	box "github.com/sagernet/sing-box"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"sync"
 	"time"
 )
@@ -41,15 +40,18 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	loadConfig, err := config.LoadConfig()
 	if err != nil {
-		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
-			Type:    runtime.WarningDialog,
-			Title:   "配置加载错误",
-			Message: err.Error(),
-		})
+		config.InitConfig()
+		//_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		//	Type:    runtime.WarningDialog,
+		//	Title:   "配置加载错误",
+		//	Message: err.Error(),
+		//})
 	}
 	a.conf = loadConfig
-	a.gamePeer = a.conf.PeerList[0]
-	a.httpPeer = a.conf.PeerList[0]
+	if len(a.conf.PeerList) > 0 {
+		a.gamePeer = a.conf.PeerList[0]
+		a.httpPeer = a.conf.PeerList[0]
+	}
 	go a.testPing()
 }
 func (a *App) PingAll() {

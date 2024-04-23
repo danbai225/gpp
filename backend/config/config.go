@@ -23,6 +23,15 @@ type Config struct {
 	HTTPPeer string  `json:"http_peer"`
 }
 
+func InitConfig() {
+	home, _ := os.UserHomeDir()
+	path := fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
+	_, err := os.Stat(path)
+	if err != nil {
+		file, _ := json.Marshal(Config{PeerList: make([]*Peer, 0)})
+		_ = os.WriteFile(path, file, 0644)
+	}
+}
 func LoadConfig() (*Config, error) {
 	home, _ := os.UserHomeDir()
 	path := "config.json"
