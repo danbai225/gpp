@@ -177,6 +177,7 @@ const submitCallback = () => {
   align-items: center;
 }
 
+
 .center {
   /* 可以添加宽度、高度等样式 */
   margin-top: 20%;
