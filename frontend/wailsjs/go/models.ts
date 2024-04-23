@@ -31,6 +31,8 @@ export namespace data {
 	    running: boolean;
 	    game_peer?: config.Peer;
 	    http_peer?: config.Peer;
+	    up: number;
+	    down: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Status(source);
@@ -41,6 +43,8 @@ export namespace data {
 	        this.running = source["running"];
 	        this.game_peer = this.convertValues(source["game_peer"], config.Peer);
 	        this.http_peer = this.convertValues(source["http_peer"], config.Peer);
+	        this.up = source["up"];
+	        this.down = source["down"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
