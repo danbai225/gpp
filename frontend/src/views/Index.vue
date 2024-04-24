@@ -32,13 +32,13 @@
                 <p>
                   上传:
                   <n-gradient-text v-if="up" type="success">
-                    {{ (up).toFixed(2) }}mb
+                    {{ (up).toFixed(2) }}kb
                   </n-gradient-text>
                 </p>
                 <p>
                   下载:
                   <n-gradient-text v-if="down" type="success">
-                    {{ (down).toFixed(2) }}mb
+                    {{ (down).toFixed(2) }}kb
                   </n-gradient-text>
                 </p>
               </n-space>
