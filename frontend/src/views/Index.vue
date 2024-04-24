@@ -28,6 +28,20 @@
                   </n-gradient-text>
                 </p>
               </n-space>
+              <n-space vertical size="small" v-if="showUpDowInfo">
+                <p>
+                  上传:
+                  <n-gradient-text v-if="up" type="success">
+                    {{ (up).toFixed(2) }}mb
+                  </n-gradient-text>
+                </p>
+                <p>
+                  下载:
+                  <n-gradient-text v-if="down" type="success">
+                    {{ (down).toFixed(2) }}mb
+                  </n-gradient-text>
+                </p>
+              </n-space>
             </n-space>
           </n-progress>
         </n-space>
@@ -105,9 +119,11 @@ const httpValue = ref()
 
 const gamePeer: Ref<any> | undefined = ref()
 const httpPeer: Ref<any> | undefined = ref()
+const up = ref()
+const down = ref()
 
 const showGameHttpInfo = ref(true)
-
+const showUpDowInfo = ref(false)
 
 const newUrl = ref()
 
@@ -116,7 +132,7 @@ onMounted(() => {
   getStatus()
   time.value = setInterval(() => {
     getStatus()
-  }, 3000);
+  }, 1000);
 })
 
 onBeforeMount(() => {
@@ -139,6 +155,7 @@ const getStarInfo = () => {
 const start = () => {
   btnDisabled.value = true
   showGameHttpInfo.value = false
+  showUpDowInfo.value = true
   btnText.value = '加速中.'
   Start().then(res => {
     state.value = true
@@ -158,6 +175,7 @@ const stop = () => {
     percentageRef.value = 0
     state.value = false
     showGameHttpInfo.value = true
+    showUpDowInfo.value = false
     btnText.value = '开始加速'
     // console.log('stopRes', res)
   })
@@ -178,9 +196,10 @@ const getList = () => {
 
 const getStatus = () => {
   Status().then(res => {
-    console.log('StatusRes', res)
     gamePeer.value = res.game_peer
     httpPeer.value = res.http_peer
+    up.value = res.up/1024
+    down.value = res.down/1024
   })
 }
 
@@ -204,6 +223,8 @@ const submitCallback = () => {
     })
   }
 }
+
+
 </script>
 
 <style>
