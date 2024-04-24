@@ -32,13 +32,13 @@
                 <p>
                   上传:
                   <n-gradient-text v-if="up" type="success">
-                    {{ (up).toFixed(2) }}kb
+                    {{ up / 1024 > 1024 ? (up / 1024 / 1024).toFixed(2) + 'MB' : (up / 1024).toFixed(2) + 'KB' }}
                   </n-gradient-text>
                 </p>
                 <p>
                   下载:
                   <n-gradient-text v-if="down" type="success">
-                    {{ (down).toFixed(2) }}kb
+                    {{ down / 1024 > 1024 ? (down / 1024 / 1024).toFixed(2) + 'MB' : (down / 1024).toFixed(2) + 'KB'}}
                   </n-gradient-text>
                 </p>
               </n-space>
@@ -46,7 +46,7 @@
           </n-progress>
         </n-space>
         <n-space>
-          <n-button :disabled="btnDisabled" @click="!state?start():stop()" style="margin-left: 55px">
+          <n-button :disabled="btnDisabled" @click="!state?start():stop()" style="margin-left: 110px">
             {{ btnText }}
           </n-button>
           <!--          <n-button @click="getList()">-->
@@ -198,8 +198,8 @@ const getStatus = () => {
   Status().then(res => {
     gamePeer.value = res.game_peer
     httpPeer.value = res.http_peer
-    up.value = res.up/1024
-    down.value = res.down/1024
+    up.value = res.up
+    down.value = res.down
   })
 }
 
@@ -237,18 +237,18 @@ const submitCallback = () => {
 .center {
   /* 可以添加宽度、高度等样式 */
   margin-top: 20%;
-  margin-left: -50px;
+  margin-left: -100px;
 }
 
 
 .n-progress-content {
-  width: 200px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
 }
 
 
 .n-progress-content svg {
-  width: 200px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
 }
 </style>
