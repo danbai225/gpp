@@ -78,8 +78,8 @@ func (a *App) Status() *data.Status {
 	counters, _ := net.IOCounters(true)
 	for _, counter := range counters {
 		if counter.Name == "utun225" {
-			status.Up = counter.BytesRecv
-			status.Down = counter.BytesSent
+			status.Up = counter.BytesSent
+			status.Down = counter.BytesRecv
 		}
 	}
 	return &status
