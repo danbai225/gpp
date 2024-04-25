@@ -29,16 +29,16 @@
                 </p>
               </n-space>
               <n-space vertical size="small" v-if="showUpDowInfo">
+<!--                <p>-->
+<!--                  上传:-->
+<!--                  <n-gradient-text v-if="up" type="success">-->
+<!--                    {{ up / 1024 > 1024 ? (up / 1024 / 1024).toFixed(2) + 'MB' : (up / 1024).toFixed(2) + 'KB' }}-->
+<!--                  </n-gradient-text>-->
+<!--                </p>-->
                 <p>
-                  上传:
-                  <n-gradient-text v-if="up" type="success">
-                    {{ up / 1024 > 1024 ? (up / 1024 / 1024).toFixed(2) + 'MB' : (up / 1024).toFixed(2) + 'KB' }}
-                  </n-gradient-text>
-                </p>
-                <p>
-                  下载:
+                  流量统计:
                   <n-gradient-text v-if="down" type="success">
-                    {{ down / 1024 > 1024 ? (down / 1024 / 1024).toFixed(2) + 'MB' : (down / 1024).toFixed(2) + 'KB'}}
+                    {{ down / 1024 > 1024 ? (down / 1024 / 1024).toFixed(2) + 'MB' : (down / 1024).toFixed(2) + 'KB' }}
                   </n-gradient-text>
                 </p>
               </n-space>
@@ -103,7 +103,6 @@
 import {ref, defineComponent, Ref, reactive, onMounted} from 'vue'
 import {Add, List, SetPeer, Start, Status, Stop} from "../../wailsjs/go/main/App";
 import {SelectOption, SelectGroupOption} from 'naive-ui'
-import {config, data} from "../../wailsjs/go/models";
 import {onBeforeMount} from "@vue/runtime-core";
 
 const percentageRef = ref(0)
@@ -140,19 +139,10 @@ onBeforeMount(() => {
   time.value = null;
 })
 
-const getStarInfo = () => {
-  Start().then(res => {
-    console.log(res)
-    if (res === "ok") {
-      showGameHttpInfo.value = false
-    } else if (res === "running") {
-      showGameHttpInfo.value = true
-      return
-    }
-  })
-}
 
 const start = () => {
+  if (gamePeer.value === undefined && httpPeer.value === undefined) {
+  }
   btnDisabled.value = true
   showGameHttpInfo.value = false
   showUpDowInfo.value = true
@@ -177,7 +167,6 @@ const stop = () => {
     showGameHttpInfo.value = true
     showUpDowInfo.value = false
     btnText.value = '开始加速'
-    // console.log('stopRes', res)
   })
 }
 // Z3BwOi8vdmxlc3NAMTIzLjU4LjIxMi4xOTU6MzQ1NTYvYmFkYjE3ZWYtZWIyMi00ZTAzLTliMTctZWZlYjIyNGUwM2U3
@@ -200,6 +189,7 @@ const getStatus = () => {
     httpPeer.value = res.http_peer
     up.value = res.up
     down.value = res.down
+    console.log(res)
   })
 }
 
