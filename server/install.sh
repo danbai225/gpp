@@ -21,6 +21,7 @@ echo "Changed to directory: $PWD"
 UUID=$(uuidgen)
 cat << EOF > config.json
 {
+  "protocol": "vless",
   "port": $LISTEN_PORT,
   "addr": "$LISTEN_ADDRESS",
   "uuid":"$UUID"
@@ -61,7 +62,7 @@ if [ "\$1" = "start" ]; then
     exit 1
   else
     echo "Starting gpp"
-    nohup ${INSTALL_PATH}/gpp server > "\$log_file" 2>&1 &
+    nohup ${INSTALL_PATH}/gpp > "\$log_file" 2>&1 &
     echo \$! > "\$pid_file"
     echo "stm started with pid \$!"
     exit 0
