@@ -54,7 +54,7 @@ func SaveConfig(config *Config) error {
 		_path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
 	}
 	file, _ := json.Marshal(config)
-	return os.WriteFile(_path, file, 0644)
+	return os.WriteFile(_path, file, os.ModePerm)
 }
 func ParsePeer(token string) (error, *Peer) {
 	split := strings.Split(token, "#")
