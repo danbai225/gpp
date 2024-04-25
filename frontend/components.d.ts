@@ -11,7 +11,6 @@ declare module 'vue' {
     Layout: typeof import('./src/components/Layout.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NGradientText: typeof import('naive-ui')['NGradientText']
-    NIcon: typeof import('naive-ui')['NIcon']
     NInput: typeof import('naive-ui')['NInput']
     NModal: typeof import('naive-ui')['NModal']
     NProgress: typeof import('naive-ui')['NProgress']
