@@ -42,13 +42,17 @@ func (a *App) startup(ctx context.Context) {
 	loadConfig, err := config.LoadConfig()
 	if err != nil {
 		config.InitConfig()
+		a.conf = &config.Config{
+			PeerList: make([]*config.Peer, 0),
+		}
 		//_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 		//	Type:    runtime.WarningDialog,
 		//	Title:   "配置加载错误",
 		//	Message: err.Error(),
 		//})
+	} else {
+		a.conf = loadConfig
 	}
-	a.conf = loadConfig
 	if len(a.conf.PeerList) > 0 {
 		a.gamePeer = a.conf.PeerList[0]
 		a.httpPeer = a.conf.PeerList[0]
