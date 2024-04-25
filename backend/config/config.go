@@ -27,34 +27,34 @@ type Config struct {
 func InitConfig() {
 	home, _ := os.UserHomeDir()
 	_path := fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
-	_ = os.MkdirAll(path.Dir(_path), 0644)
+	_ = os.MkdirAll(path.Dir(_path), os.ModePerm)
 	_, err := os.Stat(_path)
 	if err != nil {
 		file, _ := json.Marshal(Config{PeerList: make([]*Peer, 0)})
-		_ = os.WriteFile(_path, file, 0644)
+		_ = os.WriteFile(_path, file, os.ModePerm)
 	}
 }
 func LoadConfig() (*Config, error) {
 	home, _ := os.UserHomeDir()
-	path := "config.json"
-	_, err := os.Stat(path)
+	_path := "config.json"
+	_, err := os.Stat(_path)
 	if err != nil {
-		path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
+		_path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
 	}
-	file, _ := os.ReadFile(path)
+	file, _ := os.ReadFile(_path)
 	conf := &Config{PeerList: make([]*Peer, 0)}
 	err = json.Unmarshal(file, &conf)
 	return conf, err
 }
 func SaveConfig(config *Config) error {
 	home, _ := os.UserHomeDir()
-	path := "config.json"
-	_, err := os.Stat(path)
+	_path := "config.json"
+	_, err := os.Stat(_path)
 	if err != nil {
-		path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
+		_path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
 	}
 	file, _ := json.Marshal(config)
-	return os.WriteFile(path, file, 0644)
+	return os.WriteFile(_path, file, 0644)
 }
 func ParsePeer(token string) (error, *Peer) {
 	split := strings.Split(token, "#")

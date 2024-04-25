@@ -9,6 +9,7 @@ import (
 	"github.com/cloverstd/tcping/ping"
 	box "github.com/sagernet/sing-box"
 	"github.com/shirou/gopsutil/v3/net"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"sync"
 	"time"
 )
@@ -41,15 +42,11 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	loadConfig, err := config.LoadConfig()
 	if err != nil {
-		config.InitConfig()
-		a.conf = &config.Config{
-			PeerList: make([]*config.Peer, 0),
-		}
-		//_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
-		//	Type:    runtime.WarningDialog,
-		//	Title:   "配置加载错误",
-		//	Message: err.Error(),
-		//})
+		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+			Type:    runtime.WarningDialog,
+			Title:   "配置加载错误",
+			Message: err.Error(),
+		})
 	} else {
 		a.conf = loadConfig
 	}

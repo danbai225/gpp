@@ -1,29 +1,36 @@
 package main
 
 import (
+	"client/backend/config"
 	"embed"
 	"github.com/getlantern/elevate"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"os"
+	exec2 "os/exec"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
 
 func main() {
-	if _, err := os.Stat(".dev"); err != nil {
-		if len(os.Args) == 1 {
-			command := elevate.Command(os.Args[0], "sudo")
-			command.Stderr = os.Stderr
-			command.Stdout = os.Stdout
-			command.Stdin = os.Stdin
-			_ = command.Start()
-			_ = command.Wait()
-			os.Exit(0)
+	if len(os.Args) == 1 {
+		config.InitConfig()
+		var command *exec2.Cmd
+		if _, err := os.Stat(".dev"); err != nil {
+			command = exec2.Command(os.Args[0], "dev")
+		} else {
+			command = elevate.Command(os.Args[0], "sudo")
 		}
+		command.Stderr = os.Stderr
+		command.Stdout = os.Stdout
+		command.Stdin = os.Stdin
+		_ = command.Start()
+		_ = command.Wait()
+		os.Exit(0)
 	}
+
 	// Create an instance of the app structure
 	app := NewApp()
 	defer app.Stop()
