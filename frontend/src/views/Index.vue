@@ -14,14 +14,14 @@
               {{ percentageRef === 100 ? '加速完成' : percentageRef === 0 ? '未开始' : '正在加速' }}
               <n-space vertical size="small" v-if="showGameHttpInfo">
                 <p @click="getList()">
-                  Game:{{ gamePeer === undefined ? '未选择' : gamePeer.name }}
+                  Game:{{ gamePeer === null ? '未选择' : gamePeer.name }}
                   <n-gradient-text v-if="gamePeer"
                                    :type="gamePeer.ping<60?'success':gamePeer.ping<100?'warning':'error'">
                     {{ gamePeer.ping }}
                   </n-gradient-text>
                 </p>
                 <p @click="getList()">
-                  Http:{{ httpPeer === undefined ? '未选择' : httpPeer.name }}
+                  Http:{{ httpPeer === null ? '未选择' : httpPeer.name }}
                   <n-gradient-text v-if="httpPeer"
                                    :type="httpPeer.ping<60?'success':httpPeer.ping<100?'warning':'error'">
                     {{ httpPeer.ping }}
@@ -29,16 +29,16 @@
                 </p>
               </n-space>
               <n-space vertical size="small" v-if="showUpDowInfo">
+                <!--                <p>-->
+                <!--                  上传:-->
+                <!--                  <n-gradient-text v-if="up" type="success">-->
+                <!--                    {{ up / 1024 > 1024 ? (up / 1024 / 1024).toFixed(2) + 'MB' : (up / 1024).toFixed(2) + 'KB' }}-->
+                <!--                  </n-gradient-text>-->
+                <!--                </p>-->
                 <p>
-                  上传:
-                  <n-gradient-text v-if="up" type="success">
-                    {{ up / 1024 > 1024 ? (up / 1024 / 1024).toFixed(2) + 'MB' : (up / 1024).toFixed(2) + 'KB' }}
-                  </n-gradient-text>
-                </p>
-                <p>
-                  下载:
+                  流量统计:
                   <n-gradient-text v-if="down" type="success">
-                    {{ down / 1024 > 1024 ? (down / 1024 / 1024).toFixed(2) + 'MB' : (down / 1024).toFixed(2) + 'KB'}}
+                    {{ down / 1024 > 1024 ? (down / 1024 / 1024).toFixed(2) + 'MB' : (down / 1024).toFixed(2) + 'KB' }}
                   </n-gradient-text>
                 </p>
               </n-space>
@@ -71,7 +71,7 @@
               v-model:value="gameValue"
               vertical
               filterable
-              :options="gameOpt"
+              :options="gameHttpOpt"
               placeholder="请选择Game"
               value-field="val"
               label-field="name"
@@ -81,7 +81,7 @@
               v-model:value="httpValue"
               vertical
               filterable
-              :options="gameOpt"
+              :options="gameHttpOpt"
               placeholder="请选择Http"
               value-field="val"
               label-field="name"
@@ -100,10 +100,9 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, defineComponent, Ref, reactive, onMounted} from 'vue'
+import {ref, defineComponent, Ref, reactive, onMounted, watch} from 'vue'
 import {Add, List, SetPeer, Start, Status, Stop} from "../../wailsjs/go/main/App";
 import {SelectOption, SelectGroupOption} from 'naive-ui'
-import {config, data} from "../../wailsjs/go/models";
 import {onBeforeMount} from "@vue/runtime-core";
 
 const percentageRef = ref(0)
@@ -111,14 +110,12 @@ const state = ref(false)
 const btnText = ref('开始加速')
 const btnDisabled = ref(false)
 const showModal = ref(false)
-const httpDialog = ref(false)
-const gameOpt = ref(Array<SelectOption | SelectGroupOption>())
-const httpOpt = ref(Array<SelectOption | SelectGroupOption>())
+const gameHttpOpt = ref(Array<SelectOption | SelectGroupOption>())
 const gameValue = ref()
 const httpValue = ref()
 
-const gamePeer: Ref<any> | undefined = ref()
-const httpPeer: Ref<any> | undefined = ref()
+const gamePeer: Ref<any> | null = ref(null)
+const httpPeer: Ref<any> | null = ref(null)
 const up = ref()
 const down = ref()
 
@@ -140,17 +137,6 @@ onBeforeMount(() => {
   time.value = null;
 })
 
-const getStarInfo = () => {
-  Start().then(res => {
-    console.log(res)
-    if (res === "ok") {
-      showGameHttpInfo.value = false
-    } else if (res === "running") {
-      showGameHttpInfo.value = true
-      return
-    }
-  })
-}
 
 const start = () => {
   btnDisabled.value = true
@@ -159,7 +145,6 @@ const start = () => {
   btnText.value = '加速中.'
   Start().then(res => {
     state.value = true
-    // console.log('startRes', res)
     let timer = setInterval(() => {
       percentageRef.value += 10
       if (percentageRef.value === 100) {
@@ -177,16 +162,15 @@ const stop = () => {
     showGameHttpInfo.value = true
     showUpDowInfo.value = false
     btnText.value = '开始加速'
-    // console.log('stopRes', res)
   })
 }
 // Z3BwOi8vdmxlc3NAMTIzLjU4LjIxMi4xOTU6MzQ1NTYvYmFkYjE3ZWYtZWIyMi00ZTAzLTliMTctZWZlYjIyNGUwM2U3
 const getList = () => {
   showModal.value = true
-  gameOpt.value = Array<SelectOption | SelectGroupOption>()
+  gameHttpOpt.value = Array<SelectOption | SelectGroupOption>()
   List().then(res => {
     res.forEach((item) => {
-      gameOpt.value.push({
+      gameHttpOpt.value.push({
         name: item.name + '-' + item.ping + 'ms',
         val: item.name
       })
@@ -196,33 +180,41 @@ const getList = () => {
 
 const getStatus = () => {
   Status().then(res => {
-    gamePeer.value = res.game_peer
-    httpPeer.value = res.http_peer
-    up.value = res.up
-    down.value = res.down
+    if (res.game_peer !== null || res.http_peer !== null) {
+      gamePeer.value = res.game_peer
+      httpPeer.value = res.http_peer
+      up.value = res.up
+      down.value = res.down
+      btnText.value = '开始加速'
+      btnDisabled.value = false
+      return;
+    }
+    btnText.value = '无可以节点'
+    btnDisabled.value = true
   })
 }
 
 const submitCallback = () => {
-  if (newUrl.value !== "") {
+  if (newUrl.value !== undefined) {
     Add(newUrl.value).then(res => {
-      console.log(res)
-    })
-  } else if (gameValue.value !== '' && httpValue.value !== '') {
-    SetPeer(gameValue.value, httpValue.value).then(res => {
-      console.log(res)
-      getStatus()
-    })
-  } else if (newUrl.value !== '' && gameValue.value !== '' && httpValue.value !== '') {
-    Add(newUrl.value).then(res => {
-      console.log(res)
-    })
-    SetPeer(gameValue.value, httpValue.value).then(res => {
-      console.log(res)
-      getStatus()
-    })
+      newUrl.value = undefined;
+    });
   }
-}
+  if (gameValue.value !== undefined || httpValue.value !== undefined) {
+    SetPeer(gameValue.value, httpValue.value).then(res => {
+    });
+    gameValue.value = undefined;
+    httpValue.value = undefined;
+  }
+  if (newUrl.value !== undefined && gameValue.value !== undefined || httpValue.value !== undefined) {
+    Promise.all([Add(newUrl.value), SetPeer(gameValue.value, httpValue.value)]).then(res => {
+      newUrl.value = undefined;
+      gameValue.value = undefined;
+      httpValue.value = undefined;
+    });
+  }
+  getStatus();
+};
 
 
 </script>
