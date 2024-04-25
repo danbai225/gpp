@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/netip"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -26,9 +26,13 @@ type Config struct {
 
 func InitConfig() {
 	home, _ := os.UserHomeDir()
-	_path := fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
-	_ = os.MkdirAll(path.Dir(_path), os.ModePerm)
+	_path := "config.json"
 	_, err := os.Stat(_path)
+	if err != nil {
+		_path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
+	}
+	_ = os.MkdirAll(filepath.Dir(_path), os.ModeDir)
+	_, err = os.Stat(_path)
 	if err != nil {
 		file, _ := json.Marshal(Config{PeerList: make([]*Peer, 0)})
 		_ = os.WriteFile(_path, file, os.ModePerm)

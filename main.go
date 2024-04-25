@@ -16,7 +16,6 @@ var assets embed.FS
 
 func main() {
 	if len(os.Args) == 1 {
-		config.InitConfig()
 		var command *exec2.Cmd
 		if _, err := os.Stat(".dev"); err != nil {
 			command = exec2.Command(os.Args[0], "dev")
@@ -30,7 +29,7 @@ func main() {
 		_ = command.Wait()
 		os.Exit(0)
 	}
-
+	config.InitConfig()
 	// Create an instance of the app structure
 	app := NewApp()
 	defer app.Stop()
