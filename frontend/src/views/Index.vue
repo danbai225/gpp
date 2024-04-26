@@ -56,6 +56,9 @@
           <!--            Status-->
           <!--          </n-button>-->
         </n-space>
+        <n-gradient-text type="success" style="margin-left: 130px;margin-top: 35px">
+          v1.2.4
+        </n-gradient-text>
       </n-space>
       <div>
         <n-modal
@@ -93,7 +96,6 @@
               placeholder="导入新连接"
           />
         </n-modal>
-
       </div>
     </div>
   </div>
@@ -147,7 +149,7 @@ const start = () => {
   btnText.value = '加速中.'
   Start().then(res => {
     if (res !== 'ok' && res !== 'running') {
-      message.error('加速失败')
+      message.error(`加速失败:` + res)
       btnDisabled.value = false
       showUpDowInfo.value = false
       showGameHttpInfo.value = true
