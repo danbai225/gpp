@@ -11,6 +11,74 @@ import (
 	"time"
 )
 
+func getOUt(peer *config.Peer) option.Outbound {
+	var out option.Outbound
+	switch peer.Protocol {
+	case "shadowsocks":
+		out = option.Outbound{
+			Type: "shadowsocks",
+			Tag:  "shadowsocks-out",
+			ShadowsocksOptions: option.ShadowsocksOutboundOptions{
+				ServerOptions: option.ServerOptions{
+					Server:     peer.Addr,
+					ServerPort: peer.Port,
+				},
+				Method:   "xchacha20-ietf-poly1305",
+				Password: peer.UUID,
+				Multiplex: &option.OutboundMultiplexOptions{
+					Enabled:        true,
+					Protocol:       "h2mux",
+					MaxConnections: 4,
+					MinStreams:     4,
+					MaxStreams:     0,
+					Padding:        false,
+				},
+			},
+		}
+	case "socks":
+		out = option.Outbound{
+			Type: "socks",
+			Tag:  "socks-out",
+			SocksOptions: option.SocksOutboundOptions{
+				ServerOptions: option.ServerOptions{
+					Server:     peer.Addr,
+					ServerPort: peer.Port,
+				},
+				Username: "gpp",
+				Password: peer.UUID,
+			},
+		}
+	default:
+		out = option.Outbound{
+			Type: "vless",
+			Tag:  "vless-out",
+			VLESSOptions: option.VLESSOutboundOptions{
+				ServerOptions: option.ServerOptions{
+					Server:     peer.Addr,
+					ServerPort: peer.Port,
+				},
+				UUID: peer.UUID,
+				Multiplex: &option.OutboundMultiplexOptions{
+					Enabled:        true,
+					Protocol:       "h2mux",
+					MaxConnections: 4,
+					MinStreams:     4,
+					MaxStreams:     0,
+					Padding:        false,
+				},
+				Transport: &option.V2RayTransportOptions{
+					Type: "ws",
+					WebsocketOptions: option.V2RayWebsocketOptions{
+						Path:                fmt.Sprintf("/%s", peer.UUID),
+						MaxEarlyData:        2048,
+						EarlyDataHeaderName: "Sec-WebSocket-Protocol",
+					},
+				},
+			},
+		}
+	}
+	return out
+}
 func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 	home, _ := os.UserHomeDir()
 	options := box.Options{
@@ -120,33 +188,7 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 				},
 			},
 			Outbounds: []option.Outbound{
-				{
-					Type: "vless",
-					Tag:  "vless-out",
-					VLESSOptions: option.VLESSOutboundOptions{
-						ServerOptions: option.ServerOptions{
-							Server:     gamePeer.Addr,
-							ServerPort: gamePeer.Port,
-						},
-						UUID: gamePeer.UUID,
-						Multiplex: &option.OutboundMultiplexOptions{
-							Enabled:        true,
-							Protocol:       "h2mux",
-							MaxConnections: 4,
-							MinStreams:     4,
-							MaxStreams:     0,
-							Padding:        false,
-						},
-						Transport: &option.V2RayTransportOptions{
-							Type: "ws",
-							WebsocketOptions: option.V2RayWebsocketOptions{
-								Path:                fmt.Sprintf("/%s", gamePeer.UUID),
-								MaxEarlyData:        2048,
-								EarlyDataHeaderName: "Sec-WebSocket-Protocol",
-							},
-						},
-					},
-				},
+				getOUt(gamePeer),
 				{
 					Type: "block",
 					Tag:  "block",
@@ -161,40 +203,16 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 			},
 		},
 	}
-	if httpPeer.Addr != "" {
-		out := "http-out"
-		if httpPeer.Addr != "direct" {
-			options.Options.Outbounds = append(options.Options.Outbounds, option.Outbound{
-				Type: "vless",
-				Tag:  "http-out",
-				VLESSOptions: option.VLESSOutboundOptions{
-					ServerOptions: option.ServerOptions{
-						Server:     httpPeer.Addr,
-						ServerPort: httpPeer.Port,
-					},
-					UUID: httpPeer.UUID,
-					Multiplex: &option.OutboundMultiplexOptions{
-						Enabled:        true,
-						Protocol:       "h2mux",
-						MaxConnections: 4,
-						MinStreams:     4,
-						MaxStreams:     0,
-						Padding:        false,
-					},
-					Transport: &option.V2RayTransportOptions{
-						Type: "ws",
-						WebsocketOptions: option.V2RayWebsocketOptions{
-							Path:                fmt.Sprintf("/%s", httpPeer.UUID),
-							MaxEarlyData:        2048,
-							EarlyDataHeaderName: "Sec-WebSocket-Protocol",
-						},
-					},
-				},
-			})
-		} else {
-			out = "direct"
+	if httpPeer != nil {
+		if httpPeer.Name != gamePeer.Name {
+			out := "http-out"
+			if gamePeer.Name == "direct" {
+				out = "direct"
+			} else {
+				options.Options.Outbounds = append(options.Options.Outbounds, getOUt(httpPeer))
+			}
+			options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http", "quic", "tls"}, Outbound: out}})
 		}
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http", "quic", "tls"}, Outbound: out}})
 	}
 	var instance, err = box.New(options)
 	if err != nil {
