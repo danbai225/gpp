@@ -104,6 +104,7 @@ import {ref, defineComponent, Ref, reactive, onMounted, watch} from 'vue'
 import {Add, List, SetPeer, Start, Status, Stop} from "../../wailsjs/go/main/App";
 import {SelectOption, SelectGroupOption} from 'naive-ui'
 import {onBeforeMount} from "@vue/runtime-core";
+import {useMessage} from 'naive-ui'
 
 const percentageRef = ref(0)
 const state = ref(false)
@@ -129,7 +130,7 @@ onMounted(() => {
   getStatus()
   time.value = setInterval(() => {
     getStatus()
-  }, 1000);
+  }, 10000);
 })
 
 onBeforeMount(() => {
@@ -137,6 +138,7 @@ onBeforeMount(() => {
   time.value = null;
 })
 
+const message = useMessage()
 
 const start = () => {
   btnDisabled.value = true
@@ -144,6 +146,13 @@ const start = () => {
   showUpDowInfo.value = true
   btnText.value = '加速中.'
   Start().then(res => {
+    if (res !== 'ok' && res !== 'running') {
+      message.error('加速失败')
+      btnDisabled.value = false
+      showUpDowInfo.value = false
+      showGameHttpInfo.value = true
+      return;
+    }
     state.value = true
     let timer = setInterval(() => {
       percentageRef.value += 10
@@ -178,6 +187,7 @@ const getList = () => {
   })
 }
 
+
 const getStatus = () => {
   Status().then(res => {
     if (res.game_peer !== null || res.http_peer !== null) {
@@ -185,35 +195,54 @@ const getStatus = () => {
       httpPeer.value = res.http_peer
       up.value = res.up
       down.value = res.down
-      btnText.value = '开始加速'
       btnDisabled.value = false
+      btnText.value = state.value ? '结束加速' : '开始加速'
       return;
     }
-    btnText.value = '无可以节点'
+    btnText.value = '没有节点'
     btnDisabled.value = true
   })
 }
 
 const submitCallback = () => {
+  if (newUrl.value !== undefined && gameValue.value !== undefined && httpValue.value !== undefined) {
+    message.error('只能选择一种方式')
+    newUrl.value = undefined;
+    gameValue.value = undefined;
+    httpValue.value = undefined;
+    return
+  }
   if (newUrl.value !== undefined) {
     Add(newUrl.value).then(res => {
-      newUrl.value = undefined;
+      if (res === 'ok') {
+        message.success('导入连接成功')
+        newUrl.value = undefined;
+      } else {
+        message.error('导入连接失败')
+      }
     });
   }
   if (gameValue.value !== undefined || httpValue.value !== undefined) {
-    SetPeer(gameValue.value, httpValue.value).then(res => {
-    });
-    gameValue.value = undefined;
-    httpValue.value = undefined;
-  }
-  if (newUrl.value !== undefined && gameValue.value !== undefined || httpValue.value !== undefined) {
-    Promise.all([Add(newUrl.value), SetPeer(gameValue.value, httpValue.value)]).then(res => {
-      newUrl.value = undefined;
-      gameValue.value = undefined;
+    if (gameValue.value === undefined) {
+      message.error('请选择Game节点')
       httpValue.value = undefined;
+      return
+    }
+    if (httpValue.value === undefined) {
+      message.error('请选择Http节点')
+      gameValue.value = undefined;
+      return
+    }
+    SetPeer(gameValue.value, httpValue.value).then(res => {
+      if (res === 'ok') {
+        message.success('设置节点成功')
+        gameValue.value = undefined;
+        httpValue.value = undefined;
+      } else {
+        message.error('设置节点失败')
+      }
     });
   }
-  getStatus();
 };
 
 

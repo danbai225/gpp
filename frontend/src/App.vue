@@ -7,9 +7,11 @@ import Index from "./views/Index.vue";
 
 
 <template>
-<!--  <Layout/>-->
-  <Index/>
-<!--  <HelloWorld/>-->
+  <n-message-provider>
+    <!--  <Layout/>-->
+    <Index/>
+    <!--  <HelloWorld/>-->
+  </n-message-provider>
 </template>
 
 <style>
