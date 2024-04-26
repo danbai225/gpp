@@ -148,12 +148,12 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 				AutoDetectInterface: true,
 				GeoIP: &option.GeoIPOptions{
 					Path:           fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geoip.db"),
-					DownloadURL:    "https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
+					DownloadURL:    "https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
 					DownloadDetour: "direct",
 				},
 				Geosite: &option.GeositeOptions{
 					Path:           fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geosite.db"),
-					DownloadURL:    "https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
+					DownloadURL:    "https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
 					DownloadDetour: "direct",
 				},
 				Rules: []option.Rule{

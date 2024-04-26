@@ -5,11 +5,15 @@ import (
 	"client/backend/config"
 	"client/backend/data"
 	"context"
+	"crypto/sha256"
 	"fmt"
 	"github.com/cloverstd/tcping/ping"
 	box "github.com/sagernet/sing-box"
 	"github.com/shirou/gopsutil/v3/net"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"io"
+	"net/http"
+	"os"
 	"sync"
 	"time"
 )
@@ -55,6 +59,47 @@ func (a *App) startup(ctx context.Context) {
 		a.httpPeer = a.conf.PeerList[0]
 	}
 	go a.testPing()
+	home, _ := os.UserHomeDir()
+	geoPath := fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geoip.db")
+	file, err := os.ReadFile(geoPath)
+	if err == nil {
+		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db.sha256sum")
+		if err2 == nil {
+			sum256 := sha256.Sum256(file)
+			fmt.Println(fmt.Sprintf("%x", sum256), string(rdata))
+			if fmt.Sprintf("%x", sum256) != string(rdata) {
+				rdata, err2 = httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
+				if err2 == nil {
+					_ = os.WriteFile(geoPath, rdata, 0644)
+				}
+			}
+		}
+	} else {
+		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
+		if err2 == nil {
+			_ = os.WriteFile(geoPath, rdata, 0644)
+		}
+	}
+	geoPath = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geosite.db")
+	file, err = os.ReadFile(geoPath)
+	if err == nil {
+		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db.sha256sum")
+		if err2 == nil {
+			sum256 := sha256.Sum256(file)
+			fmt.Println(fmt.Sprintf("%x", sum256), string(rdata))
+			if fmt.Sprintf("%x", sum256) != string(rdata) {
+				rdata, err2 = httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
+				if err2 == nil {
+					_ = os.WriteFile(geoPath, rdata, 0644)
+				}
+			}
+		}
+	} else {
+		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
+		if err2 == nil {
+			_ = os.WriteFile(geoPath, rdata, 0644)
+		}
+	}
 }
 func (a *App) PingAll() {
 	group := sync.WaitGroup{}
@@ -180,4 +225,12 @@ func pingPort(host string, port uint16) uint {
 	<-start
 	result := tcPing.Result()
 	return uint(result.Avg().Milliseconds())
+}
+func httpGet(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return io.ReadAll(resp.Body)
 }
