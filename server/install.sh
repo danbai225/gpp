@@ -7,6 +7,28 @@ read -p "请输入监听地址（默认0.0.0.0）: " LISTEN_ADDRESS
 LISTEN_ADDRESS=${LISTEN_ADDRESS:-"0.0.0.0"}
 read -p "请输入监听端口（默认5123）: " LISTEN_PORT
 LISTEN_PORT=${LISTEN_PORT:-"5123"}
+echo "请选择一个选项："
+echo "1) shadowsocks"
+echo "2) socks"
+echo "3) vless"
+read -p "输入选项 (1-3): " input
+PROTOCOL="vless"
+case $input in
+    1)
+        PROTOCOL="shadowsocks"
+        ;;
+    2)
+        PROTOCOL="socks"
+        ;;
+    3)
+        PROTOCOL="vless"
+        ;;
+    *)
+        echo "无效选项: $input"
+          exit 0
+        ;;
+esac
+echo "您选择的协议为: $PROTOCOL"
 echo "您输入的监听地址为: $LISTEN_ADDRESS"
 echo "您输入的监听端口为: $LISTEN_PORT"
 echo "安装路径为: $INSTALL_PATH"
@@ -21,7 +43,7 @@ echo "Changed to directory: $PWD"
 UUID=$(uuidgen)
 cat << EOF > config.json
 {
-  "protocol": "vless",
+  "protocol": "$PROTOCOL",
   "port": $LISTEN_PORT,
   "addr": "$LISTEN_ADDRESS",
   "uuid":"$UUID"

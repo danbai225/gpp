@@ -65,7 +65,7 @@ func main() {
 		if ipStr != "" {
 			fmt.Println("server ip:", ipStr)
 			// 进行Base64编码
-			encoded := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("gpp://vless@%s:%d/%s", ipStr, config.Port, config.UUID)))
+			encoded := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("gpp://%s@%s:%d/%s", config.Protocol, ipStr, config.Port, config.UUID)))
 			fmt.Println("server token:", encoded)
 		} else {
 			fmt.Println("get ip err, please check your network")

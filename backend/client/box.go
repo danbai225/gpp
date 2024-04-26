@@ -17,7 +17,7 @@ func getOUt(peer *config.Peer) option.Outbound {
 	case "shadowsocks":
 		out = option.Outbound{
 			Type: "shadowsocks",
-			Tag:  "shadowsocks-out",
+			Tag:  "ss-out",
 			ShadowsocksOptions: option.ShadowsocksOutboundOptions{
 				ServerOptions: option.ServerOptions{
 					Server:     peer.Addr,
