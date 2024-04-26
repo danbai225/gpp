@@ -9,15 +9,16 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"os"
 	exec2 "os/exec"
+	"strings"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
 
 func main() {
-	if len(os.Args) == 1 {
+	if len(os.Args) == 1 && strings.Contains(os.Args[0], "gpp") {
 		var command *exec2.Cmd
-		if _, err := os.Stat(".dev"); err != nil {
+		if _, err := os.Stat(".dev"); err == nil {
 			command = exec2.Command(os.Args[0], "dev")
 		} else {
 			command = elevate.Command(os.Args[0], "sudo")
@@ -29,7 +30,9 @@ func main() {
 		_ = command.Wait()
 		os.Exit(0)
 	}
-	config.InitConfig()
+	if strings.Contains(os.Args[0], "gpp") {
+		config.InitConfig()
+	}
 	// Create an instance of the app structure
 	app := NewApp()
 	defer app.Stop()

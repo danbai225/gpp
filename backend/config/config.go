@@ -31,11 +31,11 @@ func InitConfig() {
 	if err != nil {
 		_path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
 	}
-	_ = os.MkdirAll(filepath.Dir(_path), os.ModeDir)
+	_ = os.MkdirAll(filepath.Dir(_path), os.ModeDir|os.ModePerm)
 	_, err = os.Stat(_path)
 	if err != nil {
 		file, _ := json.Marshal(Config{PeerList: make([]*Peer, 0)})
-		_ = os.WriteFile(_path, file, os.ModePerm)
+		err = os.WriteFile(_path, file, os.ModePerm)
 	}
 }
 func LoadConfig() (*Config, error) {
@@ -93,9 +93,6 @@ func ParsePeer(token string) (error, *Peer) {
 	uuid := split[1]
 	if name == "" {
 		name = fmt.Sprintf("%s:%d", addr.Addr().String(), addr.Port())
-	}
-	if len(split) == 2 {
-		name = split[1]
 	}
 	return nil, &Peer{
 		Name:     name,
