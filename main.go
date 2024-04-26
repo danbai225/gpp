@@ -45,7 +45,7 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:         "gpp",
 		Width:         360,
-		Height:        480,
+		Height:        520,
 		DisableResize: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
