@@ -9,6 +9,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"os"
 	exec2 "os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -19,9 +20,9 @@ func main() {
 	if len(os.Args) == 1 && strings.Contains(os.Args[0], "gpp") {
 		var command *exec2.Cmd
 		if _, err := os.Stat(".dev"); err == nil {
-			command = exec2.Command(os.Args[0], "dev")
+			command = exec2.Command(os.Args[0], filepath.Dir(os.Args[0]))
 		} else {
-			command = elevate.Command(os.Args[0], "sudo")
+			command = elevate.Command(os.Args[0], filepath.Dir(os.Args[0]))
 		}
 		command.Stderr = os.Stderr
 		command.Stdout = os.Stdout
@@ -29,7 +30,10 @@ func main() {
 		_ = command.Start()
 		_ = command.Wait()
 		os.Exit(0)
+	} else if !strings.Contains(os.Args[0], "gpp") {
+		return
 	}
+	_ = os.Chdir(os.Args[1])
 	if strings.Contains(os.Args[0], "gpp") {
 		config.InitConfig()
 	}
