@@ -84,7 +84,7 @@ func ParsePeer(token string) (error, *Peer) {
 	split = strings.Split(token, "@")
 	protocol := strings.ReplaceAll(split[0], "gpp://", "")
 	switch protocol {
-	case "vless":
+	case "vless", "shadowsocks", "socks":
 	default:
 		return fmt.Errorf("unknown protocol: %s", protocol), nil
 	}

@@ -100,8 +100,8 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 				Servers: []option.DNSServerOptions{
 					{
 						Tag:     "ali",
-						Address: "local",
-						Detour:  "dns_out",
+						Address: "223.5.5.5",
+						Detour:  "direct",
 					},
 				},
 				Rules:          []option.DNSRule{},
