@@ -47,6 +47,10 @@ func getOUt(peer *config.Peer) option.Outbound {
 				},
 				Username: "gpp",
 				Password: peer.UUID,
+				UDPOverTCP: &option.UDPOverTCPOptions{
+					Enabled: true,
+					Version: 2,
+				},
 			},
 		}
 	case "direct":
