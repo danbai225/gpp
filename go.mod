@@ -8,6 +8,7 @@ require (
 	github.com/cloverstd/tcping v0.1.1
 	github.com/getlantern/elevate v0.0.0-20220903142053-479ab992b264
 	github.com/sagernet/sing-box v1.8.11
+	github.com/sagernet/sing-dns v0.1.14
 	github.com/shirou/gopsutil/v3 v3.24.3
 	github.com/wailsapp/wails/v2 v2.8.1
 )
@@ -81,7 +82,6 @@ require (
 	github.com/sagernet/quic-go v0.40.1 // indirect
 	github.com/sagernet/reality v0.0.0-20230406110435-ee17307e7691 // indirect
 	github.com/sagernet/sing v0.3.8 // indirect
-	github.com/sagernet/sing-dns v0.1.14 // indirect
 	github.com/sagernet/sing-mux v0.2.0 // indirect
 	github.com/sagernet/sing-quic v0.1.11 // indirect
 	github.com/sagernet/sing-shadowsocks v0.2.6 // indirect

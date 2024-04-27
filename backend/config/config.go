@@ -56,7 +56,7 @@ func LoadConfig() (*Config, error) {
 		}
 	}
 	if !direct {
-		conf.PeerList = append(conf.PeerList, &Peer{Name: "直连", Protocol: "direct", Port: 0, Addr: "direct", UUID: "", Ping: 0})
+		conf.PeerList = append(conf.PeerList, &Peer{Name: "直连", Protocol: "direct", Port: 0, Addr: "127.0.0.1", UUID: "", Ping: 0})
 	}
 	return conf, err
 }
@@ -104,12 +104,12 @@ func ParsePeer(token string) (error, *Peer) {
 	if name == "" {
 		name = fmt.Sprintf("%s:%s", addr[0], addr[1])
 	}
-	port, _ := strconv.ParseInt(addr[1], 10, 16)
+	port, _ := strconv.ParseInt(addr[1], 10, 64)
 	return nil, &Peer{
 		Name:     name,
 		Protocol: protocol,
 		Port:     uint16(port),
-		Addr:     addr[1],
+		Addr:     addr[0],
 		UUID:     uuid,
 	}
 }

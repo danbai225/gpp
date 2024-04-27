@@ -6,6 +6,7 @@ import (
 	"fmt"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/option"
+	dns "github.com/sagernet/sing-dns"
 	"net/netip"
 	"os"
 	"time"
@@ -17,7 +18,7 @@ func getOUt(peer *config.Peer) option.Outbound {
 	case "shadowsocks":
 		out = option.Outbound{
 			Type: "shadowsocks",
-			Tag:  "ss-out",
+			Tag:  fmt.Sprintf("ss-out-%s", peer.UUID),
 			ShadowsocksOptions: option.ShadowsocksOutboundOptions{
 				ServerOptions: option.ServerOptions{
 					Server:     peer.Addr,
@@ -38,7 +39,7 @@ func getOUt(peer *config.Peer) option.Outbound {
 	case "socks":
 		out = option.Outbound{
 			Type: "socks",
-			Tag:  "socks-out",
+			Tag:  fmt.Sprintf("socks-out-%s", peer.UUID),
 			SocksOptions: option.SocksOutboundOptions{
 				ServerOptions: option.ServerOptions{
 					Server:     peer.Addr,
@@ -56,7 +57,7 @@ func getOUt(peer *config.Peer) option.Outbound {
 	default:
 		out = option.Outbound{
 			Type: "vless",
-			Tag:  "vless-out",
+			Tag:  fmt.Sprintf("vless-out-%s", peer.UUID),
 			VLESSOptions: option.VLESSOutboundOptions{
 				ServerOptions: option.ServerOptions{
 					Server:     peer.Addr,
@@ -99,13 +100,62 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 			DNS: &option.DNSOptions{
 				Servers: []option.DNSServerOptions{
 					{
-						Tag:     "ali",
-						Address: "223.5.5.5",
-						Detour:  "direct",
+						Tag:      "proxyDns",
+						Address:  "8.8.8.8",
+						Strategy: option.DomainStrategy(dns.DomainStrategyUseIPv4),
+					},
+					{
+						Tag:      "localDns",
+						Address:  "https://223.5.5.5/dns-query",
+						Detour:   "direct",
+						Strategy: option.DomainStrategy(dns.DomainStrategyUseIPv4),
+					},
+					{
+						Tag:      "block",
+						Address:  "rcode://success",
+						Strategy: option.DomainStrategy(dns.DomainStrategyUseIPv4),
 					},
 				},
-				Rules:          []option.DNSRule{},
-				Final:          "ali",
+				Rules: []option.DNSRule{
+					{
+						Type: "default",
+						DefaultOptions: option.DefaultDNSRule{
+							Server: "localDns",
+							Domain: []string{
+								"ghproxy.com",
+								"cdn.jsdelivr.net",
+								"testingcf.jsdelivr.net",
+							},
+						},
+					},
+					{
+						Type: "default",
+						DefaultOptions: option.DefaultDNSRule{
+							Server: "block",
+							Geosite: []string{
+								"category-ads-all",
+							},
+						},
+					},
+					{
+						Type: "default",
+						DefaultOptions: option.DefaultDNSRule{
+							Server: "localDns",
+							Geosite: []string{
+								"cn",
+							},
+						},
+					},
+					{
+						Type: "default",
+						DefaultOptions: option.DefaultDNSRule{
+							Server: "proxyDns",
+							Geosite: []string{
+								"geolocation-!cn",
+							},
+						},
+					},
+				},
 				ReverseMapping: false,
 				FakeIP:         nil,
 				DNSClientOptions: option.DNSClientOptions{
@@ -123,10 +173,10 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 						InterfaceName: "utun225",
 						MTU:           9000,
 						Inet4Address: option.Listable[netip.Prefix]{
-							netip.MustParsePrefix("172.19.225.1/30"),
+							netip.MustParsePrefix("172.225.0.1/30"),
 						},
 						AutoRoute:              true,
-						StrictRoute:            false,
+						StrictRoute:            true,
 						EndpointIndependentNat: true,
 						UDPTimeout:             option.UDPTimeoutCompat(time.Second * 300),
 						Stack:                  "system",
@@ -179,6 +229,14 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 					{
 						Type: "default",
 						DefaultOptions: option.DefaultRule{
+							Network:  option.Listable[string]{"udp"},
+							Port:     []uint16{443},
+							Outbound: "block",
+						},
+					},
+					{
+						Type: "default",
+						DefaultOptions: option.DefaultRule{
 							Geosite:  option.Listable[string]{"cn"},
 							Outbound: "direct",
 						},
@@ -208,7 +266,7 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 			},
 		},
 	}
-	if httpPeer != nil {
+	if httpPeer != nil && httpPeer.Name != gamePeer.Name {
 		out := getOUt(httpPeer)
 		options.Options.Outbounds = append(options.Options.Outbounds, out)
 		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http", "quic", "tls"}, Outbound: out.Tag}})
