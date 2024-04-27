@@ -3,10 +3,11 @@ package config
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"net/netip"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -92,22 +93,23 @@ func ParsePeer(token string) (error, *Peer) {
 		return fmt.Errorf("invalid token: %s", token), nil
 	}
 	split = strings.Split(split[1], "/")
-	addr, err := netip.ParseAddrPort(split[0])
-	if err != nil {
-		return err, nil
+	addr := strings.Split(split[0], ":")
+	if len(addr) != 2 {
+		return errors.New("invalid addr: " + split[0]), nil
 	}
 	if len(split) != 2 {
 		return fmt.Errorf("invalid token: %s", token), nil
 	}
 	uuid := split[1]
 	if name == "" {
-		name = fmt.Sprintf("%s:%d", addr.Addr().String(), addr.Port())
+		name = fmt.Sprintf("%s:%s", addr[0], addr[1])
 	}
+	port, _ := strconv.ParseInt(addr[1], 10, 16)
 	return nil, &Peer{
 		Name:     name,
 		Protocol: protocol,
-		Port:     addr.Port(),
-		Addr:     addr.Addr().String(),
+		Port:     uint16(port),
+		Addr:     addr[1],
 		UUID:     uuid,
 	}
 }
