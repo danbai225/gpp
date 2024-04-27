@@ -48,6 +48,15 @@ func LoadConfig() (*Config, error) {
 	file, _ := os.ReadFile(_path)
 	conf := &Config{PeerList: make([]*Peer, 0)}
 	err = json.Unmarshal(file, &conf)
+	var direct bool
+	for _, peer := range conf.PeerList {
+		if peer.Name == "直连" {
+			direct = true
+		}
+	}
+	if !direct {
+		conf.PeerList = append(conf.PeerList, &Peer{Name: "直连", Protocol: "direct", Port: 0, Addr: "direct", UUID: "", Ping: 0})
+	}
 	return conf, err
 }
 func SaveConfig(config *Config) error {

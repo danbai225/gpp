@@ -48,6 +48,11 @@ func getOUt(peer *config.Peer) option.Outbound {
 				Password: peer.UUID,
 			},
 		}
+	case "direct":
+		out = option.Outbound{
+			Type: "direct",
+			Tag:  "direct-out",
+		}
 	default:
 		out = option.Outbound{
 			Type: "vless",
@@ -204,15 +209,9 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 		},
 	}
 	if httpPeer != nil {
-		if httpPeer.Name != gamePeer.Name {
-			out := "http-out"
-			if gamePeer.Name == "direct" {
-				out = "direct"
-			} else {
-				options.Options.Outbounds = append(options.Options.Outbounds, getOUt(httpPeer))
-			}
-			options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http", "quic", "tls"}, Outbound: out}})
-		}
+		out := getOUt(httpPeer)
+		options.Options.Outbounds = append(options.Options.Outbounds, out)
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http", "quic", "tls"}, Outbound: out.Tag}})
 	}
 	var instance, err = box.New(options)
 	if err != nil {
