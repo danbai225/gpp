@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing/common/auth"
@@ -59,6 +60,15 @@ func Server(conf Peer) error {
 					{
 						Name: "gpp",
 						UUID: conf.UUID,
+					},
+				},
+				Transport: &option.V2RayTransportOptions{
+					Type: "ws",
+					WebsocketOptions: option.V2RayWebsocketOptions{
+						Path:                fmt.Sprintf("/%s", conf.UUID),
+						Headers:             nil,
+						MaxEarlyData:        2048,
+						EarlyDataHeaderName: "Sec-WebSocket-Protocol",
 					},
 				},
 				Multiplex: &option.InboundMultiplexOptions{

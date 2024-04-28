@@ -76,6 +76,14 @@ func getOUt(peer *config.Peer) option.Outbound {
 					MaxStreams:     0,
 					Padding:        false,
 				},
+				Transport: &option.V2RayTransportOptions{
+					Type: "ws",
+					WebsocketOptions: option.V2RayWebsocketOptions{
+						Path:                fmt.Sprintf("/%s", peer.UUID),
+						MaxEarlyData:        2048,
+						EarlyDataHeaderName: "Sec-WebSocket-Protocol",
+					},
+				},
 			},
 		}
 	}
