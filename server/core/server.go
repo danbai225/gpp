@@ -1,12 +1,20 @@
 package core
 
 import (
+	"bytes"
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
 	"fmt"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing/common/auth"
+	"math/big"
 	"net/netip"
+	"time"
 )
 
 func Server(conf Peer) error {
@@ -43,6 +51,33 @@ func Server(conf Peer) error {
 					{
 						Username: "gpp",
 						Password: conf.UUID,
+					},
+				},
+			},
+		}
+	case "hysteria2":
+		c, k := generateKey()
+		in = option.Inbound{
+			Type: "hysteria2",
+			Tag:  "hy2-in",
+			Hysteria2Options: option.Hysteria2InboundOptions{
+				ListenOptions: option.ListenOptions{
+					Listen:     option.NewListenAddress(netip.MustParseAddr(conf.Addr)),
+					ListenPort: conf.Port,
+				},
+				Users: []option.Hysteria2User{
+					{
+						Name:     "gpp",
+						Password: conf.UUID,
+					},
+				},
+				InboundTLSOptionsContainer: option.InboundTLSOptionsContainer{
+					TLS: &option.InboundTLSOptions{
+						Enabled:     true,
+						ServerName:  "gpp",
+						ALPN:        option.Listable[string]{"h3"},
+						Certificate: option.Listable[string]{c},
+						Key:         option.Listable[string]{k},
 					},
 				},
 			},
@@ -106,4 +141,38 @@ func Server(conf Peer) error {
 		return err
 	}
 	return nil
+}
+func generateKey() (string, string) {
+	// 生成RSA密钥对
+	pvk, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		return "", ""
+	}
+
+	// 设置证书信息
+	template := x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject: pkix.Name{
+			Organization: []string{"GPP"},
+			CommonName:   "gpp",
+		},
+		NotBefore: time.Now(),
+		NotAfter:  time.Now().Add(365 * 24 * time.Hour),
+		KeyUsage:  x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		ExtKeyUsage: []x509.ExtKeyUsage{
+			x509.ExtKeyUsageServerAuth,
+		},
+	}
+
+	// 生成证书
+	certDER, err := x509.CreateCertificate(rand.Reader, &template, &template, &pvk.PublicKey, pvk)
+	if err != nil {
+		return "", ""
+	}
+	buffer := bytes.NewBuffer([]byte{})
+	_ = pem.Encode(buffer, &pem.Block{Type: "CERTIFICATE", Bytes: certDER})
+	buffer2 := bytes.NewBuffer([]byte{})
+	pvkBytes, _ := x509.MarshalPKCS8PrivateKey(pvk)
+	_ = pem.Encode(buffer2, &pem.Block{Type: "PRIVATE KEY", Bytes: pvkBytes})
+	return buffer.String(), buffer2.String()
 }

@@ -1,0 +1,1 @@
+wails build -tags=with_quic

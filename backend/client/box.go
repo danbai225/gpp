@@ -53,6 +53,27 @@ func getOUt(peer *config.Peer) option.Outbound {
 				},
 			},
 		}
+	case "hysteria2":
+		out = option.Outbound{
+			Type: "hysteria2",
+			Tag:  fmt.Sprintf("hy2-out-%s", peer.UUID),
+			Hysteria2Options: option.Hysteria2OutboundOptions{
+				ServerOptions: option.ServerOptions{
+					Server:     peer.Addr,
+					ServerPort: peer.Port,
+				},
+				Password: peer.UUID,
+				OutboundTLSOptionsContainer: option.OutboundTLSOptionsContainer{
+					TLS: &option.OutboundTLSOptions{
+						Enabled:    true,
+						ServerName: "gpp",
+						Insecure:   true,
+						ALPN:       option.Listable[string]{"h3"},
+					},
+				},
+				BrutalDebug: false,
+			},
+		}
 	case "direct":
 		out = option.Outbound{
 			Type: "direct",
