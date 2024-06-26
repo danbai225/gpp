@@ -49,15 +49,9 @@
           <n-button :disabled="btnDisabled" @click="!state?start():stop()" style="margin-left: 110px">
             {{ btnText }}
           </n-button>
-          <!--          <n-button @click="getList()">-->
-          <!--            list-->
-          <!--          </n-button>-->
-          <!--          <n-button @click="getStatus()">-->
-          <!--            Status-->
-          <!--          </n-button>-->
         </n-space>
         <n-gradient-text type="success" style="margin-left: 130px;margin-top: 35px">
-          v1.2.4
+          v1.2.6
         </n-gradient-text>
       </n-space>
       <div>
@@ -175,7 +169,6 @@ const stop = () => {
     btnText.value = '开始加速'
   })
 }
-// Z3BwOi8vdmxlc3NAMTIzLjU4LjIxMi4xOTU6MzQ1NTYvYmFkYjE3ZWYtZWIyMi00ZTAzLTliMTctZWZlYjIyNGUwM2U3
 const getList = () => {
   showModal.value = true
   gameHttpOpt.value = Array<SelectOption | SelectGroupOption>()
