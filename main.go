@@ -1,0 +1,38 @@
+package main
+
+import (
+	"client/backend/config"
+	"embed"
+	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+)
+
+//go:embed all:frontend/dist
+var assets embed.FS
+
+func main() {
+	config.InitConfig()
+	// Create an instance of the app structure
+	app := NewApp()
+	defer app.Stop()
+
+	// Create application with options
+	err := wails.Run(&options.App{
+		Title:         "gpp",
+		Width:         360,
+		Height:        520,
+		DisableResize: true,
+		AssetServer: &assetserver.Options{
+			Assets: assets,
+		},
+		BackgroundColour: &options.RGBA{R: 255, G: 255, B: 255, A: 0},
+		OnStartup:        app.startup,
+		Bind: []interface{}{
+			app,
+		},
+	})
+	if err != nil {
+		println("Error:", err.Error())
+	}
+}

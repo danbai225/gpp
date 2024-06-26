@@ -1,0 +1,13 @@
+builds:
+  - id: box
+    dir: server
+    main: ./cmd/gpp/main.go
+    binary: gpp
+    tags: with_quic
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
