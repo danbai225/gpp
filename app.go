@@ -8,6 +8,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"github.com/cloverstd/tcping/ping"
+	"github.com/energye/systray"
 	box "github.com/sagernet/sing-box"
 	"github.com/shirou/gopsutil/v3/net"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -37,6 +38,16 @@ func NewApp() *App {
 	}
 	return &app
 }
+func (a *App) systemTray() {
+	systray.SetIcon(logo) // read the icon from a file
+	show := systray.AddMenuItem("显示窗口", "显示窗口")
+	systray.AddSeparator()
+	exit := systray.AddMenuItem("退出加速器", "退出加速器")
+	show.Click(func() { runtime.WindowShow(a.ctx) })
+	exit.Click(func() { os.Exit(0) })
+	systray.SetOnClick(func(menu systray.IMenu) { runtime.WindowShow(a.ctx) })
+}
+
 func (a *App) testPing() {
 	a.PingAll()
 	tick := time.Tick(time.Second * 60)
@@ -46,6 +57,7 @@ func (a *App) testPing() {
 }
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+	systray.Run(a.systemTray, func() {})
 	loadConfig, err := config.LoadConfig()
 	if err != nil {
 		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{

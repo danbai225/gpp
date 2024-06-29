@@ -6,6 +6,7 @@ toolchain go1.22.1
 
 require (
 	github.com/cloverstd/tcping v0.1.1
+	github.com/energye/systray v1.0.2
 	github.com/google/uuid v1.6.0
 	github.com/sagernet/sing-box v1.9.3
 	github.com/sagernet/sing-dns v0.2.0
@@ -80,6 +81,7 @@ require (
 	github.com/sagernet/wireguard-go v0.0.0-20231215174105-89dec3b2f3e8 // indirect
 	github.com/sagernet/ws v0.0.0-20231204124109-acfe8907c854 // indirect
 	github.com/samber/lo v1.39.0 // indirect
+	github.com/tevino/abool v0.0.0-20220530134649-2bfc934cb23c // indirect
 	github.com/tkrajina/go-reflector v0.5.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect

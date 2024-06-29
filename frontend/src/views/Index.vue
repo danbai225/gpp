@@ -51,7 +51,7 @@
           </n-button>
         </n-space>
         <n-gradient-text type="success" style="margin-left: 130px;margin-top: 35px">
-          v1.2.6
+          v1.2.7
         </n-gradient-text>
       </n-space>
       <div>
