@@ -57,7 +57,7 @@ func (a *App) testPing() {
 }
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	systray.Run(a.systemTray, func() {})
+	go systray.Run(a.systemTray, func() {})
 	loadConfig, err := config.LoadConfig()
 	if err != nil {
 		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
