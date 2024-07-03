@@ -44,7 +44,13 @@ func (a *App) systemTray() {
 	systray.AddSeparator()
 	exit := systray.AddMenuItem("退出加速器", "退出加速器")
 	show.Click(func() { runtime.WindowShow(a.ctx) })
-	exit.Click(func() { os.Exit(0) })
+	exit.Click(func() {
+		a.Stop()
+		runtime.Quit(a.ctx)
+		systray.Quit()
+		os.Exit(0)
+	})
+
 	systray.SetOnClick(func(menu systray.IMenu) { runtime.WindowShow(a.ctx) })
 }
 

@@ -2,14 +2,14 @@
 
 基于[sing-box](https://github.com/SagerNet/sing-box)的加速器，使用golang编写，支持windows、linux、macos
 
-- 使用vless+ws协议传输
-- 支持tcp、udp
 - http分流
 - gui客户端
 - 基于tun代理
-  ![微信图片_20240424204203.png](https://imgc.cc/2024/04/24/6628fecfb8f06.png)
 
-建议禁用ipv6使用加速器，[qq交流群936204503](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=syMCYJm6Isz_yAxUfrQetpNGioUdpdjO&authKey=lkUyXpKkdAzUwOZYq0m%2BH5Y%2FvAU3XegyxWTm5fM1%2BxOZDdBHJUF%2BODVeNg9MraDl&noverify=0&group_code=936204503)
+![微信图片_20240424204203.png](https://imgc.cc/2024/04/24/6628fecfb8f06.png)
+
+建议禁用ipv6使用加速器，
+[qq交流群936204503](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=syMCYJm6Isz_yAxUfrQetpNGioUdpdjO&authKey=lkUyXpKkdAzUwOZYq0m%2BH5Y%2FvAU3XegyxWTm5fM1%2BxOZDdBHJUF%2BODVeNg9MraDl&noverify=0&group_code=936204503)
 
 # 下载
 
@@ -49,3 +49,7 @@ wget https://raw.githubusercontent.com/danbai225/gpp/main/server/install.sh
 chmod +x install.sh
 ./install.sh
 ```
+
+# 导入节点
+
+复制服务端日志输出的链接到客户端导入,或者自己编辑`config.json`

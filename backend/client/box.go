@@ -107,12 +107,12 @@ func Client(gamePeer, httpPeer *config.Peer, processList []string) (*box.Box, er
 				Servers: []option.DNSServerOptions{
 					{
 						Tag:      "proxyDns",
-						Address:  "https://1.1.1.1/dns-query",
+						Address:  "8.8.8.8",
 						Strategy: option.DomainStrategy(dns.DomainStrategyUseIPv4),
 					},
 					{
 						Tag:      "localDns",
-						Address:  "https://223.5.5.5/dns-query",
+						Address:  "223.5.5.5",
 						Detour:   "direct",
 						Strategy: option.DomainStrategy(dns.DomainStrategyUseIPv4),
 					},
