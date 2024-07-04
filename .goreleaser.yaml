@@ -2,8 +2,7 @@ builds:
   - id: box
     dir: .
     main: ./cmd/gpp/main.go
-    binary: gpp
-    tags: with_quic
+    binary: gpp-server
     goos:
       - linux
       - darwin

@@ -30,15 +30,15 @@ jobs:
       fail-fast: false
       matrix:
         build: [
-          { name: gpp, platform: linux/amd64, os: ubuntu-latest },
-          { name: gpp, platform: windows/amd64, os: windows-latest },
-          { name: gpp, platform: darwin/universal, os: macos-latest }
+          { name: gpp_linux, platform: linux/amd64, os: ubuntu-latest },
+          { name: gpp_windows, platform: windows/amd64, os: windows-latest },
+          { name: gpp_mac, platform: darwin/universal, os: macos-latest }
         ]
     runs-on: ${{ matrix.build.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          fetch-depth: 0
       - uses: dAppServer/wails-build-action@v2.2
         with:
           build-name: ${{ matrix.build.name }}
