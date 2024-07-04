@@ -116,6 +116,8 @@ EOF
 chmod +x run.sh
 
 echo "安装完成,请执行 ${INSTALL_PATH}/run.sh start 启动服务端,执行 ${INSTALL_PATH}/run.sh stop 停止服务端"
+read -p "请为您的节点取一个名字: " Name
+Name=${Name:-"$NET_IP-$LISTEN_PORT"}
 result="gpp://$PROTOCOL@$NET_IP:$LISTEN_PORT/$UUID"
 encoded_result=$(echo -n $result | base64)
-echo "导入链接：${encoded_result}"
+echo "导入链接：${encoded_result}#$Name"

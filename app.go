@@ -27,6 +27,7 @@ type App struct {
 	httpPeer    *config.Peer
 	box         *box.Box
 	processList []string
+	lock        sync.Mutex
 }
 
 // NewApp creates a new App application struct
@@ -120,6 +121,12 @@ func (a *App) startup(ctx context.Context) {
 	}
 }
 func (a *App) PingAll() {
+	a.lock.Lock()
+	if a.box != nil {
+		a.lock.Unlock()
+		return
+	}
+	a.lock.Unlock()
 	group := sync.WaitGroup{}
 	for i := range a.conf.PeerList {
 		if a.conf.PeerList[i].Protocol == "direct" {
@@ -136,6 +143,8 @@ func (a *App) PingAll() {
 }
 
 func (a *App) Status() *data.Status {
+	a.lock.Lock()
+	defer a.lock.Unlock()
 	status := data.Status{
 		Running:  a.box != nil,
 		GamePeer: a.gamePeer,
@@ -221,6 +230,8 @@ func (a *App) SetPeer(game, http string) string {
 
 // Start 启动加速
 func (a *App) Start() string {
+	a.lock.Lock()
+	defer a.lock.Unlock()
 	if a.box != nil {
 		return "running"
 	}
@@ -248,6 +259,8 @@ func (a *App) Start() string {
 
 // Stop 停止加速
 func (a *App) Stop() string {
+	a.lock.Lock()
+	defer a.lock.Unlock()
 	if a.box == nil {
 		return "not running"
 	}
@@ -268,9 +281,9 @@ func pingPort(host string, port uint16) uint {
 	tcPing.SetTarget(&ping.Target{
 		Host:     host,
 		Port:     int(port),
-		Counter:  3,
+		Counter:  1,
 		Interval: time.Millisecond * 200,
-		Timeout:  time.Second,
+		Timeout:  time.Second * 3,
 	})
 	start := tcPing.Start()
 	<-start
