@@ -30,9 +30,9 @@ jobs:
       fail-fast: false
       matrix:
         build: [
-          { name: gpp_linux, platform: linux/amd64, os: ubuntu-latest },
-          { name: gpp_windows, platform: windows/amd64, os: windows-latest },
-          { name: gpp_mac, platform: darwin/universal, os: macos-latest }
+          { name: gpp, platform: linux/amd64, os: ubuntu-latest },
+          { name: gpp, platform: windows/amd64, os: windows-latest },
+          { name: gpp, platform: darwin/universal, os: macos-latest }
         ]
     runs-on: ${{ matrix.build.os }}
     steps:
