@@ -13,15 +13,8 @@
 
 # 下载
 
-# 服务端
+[从releases下载](https://github.com/danbai225/gpp/releases)
 
-[下载服务端](https://github.com/danbai225/gpp/releases)
-
-# 客户端
-
-[下载客户端](https://danbai.lanzouq.com/b0064z1wuf)
-
-密码:gpi8
 # 编译
 
 ## 编译服务端
