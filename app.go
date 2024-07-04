@@ -243,6 +243,7 @@ func (a *App) Start() string {
 			Title:   "加速失败",
 			Message: err.Error(),
 		})
+		a.box = nil
 		return err.Error()
 	}
 	err = a.box.Start()
@@ -252,6 +253,7 @@ func (a *App) Start() string {
 			Title:   "加速失败",
 			Message: err.Error(),
 		})
+		a.box = nil
 		return err.Error()
 	}
 	return "ok"
