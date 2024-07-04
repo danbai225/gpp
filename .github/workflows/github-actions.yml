@@ -3,8 +3,6 @@ on:
   push:
     tags:
       - 'v*'
-    branches:
-      - 'test'
 env:
   NODE_OPTIONS: "--max-old-space-size=4096"  # 增加 Node.js 可用的最大内存，防止构建失败
 jobs:
