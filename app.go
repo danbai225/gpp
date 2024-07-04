@@ -56,7 +56,7 @@ func (a *App) systemTray() {
 
 func (a *App) testPing() {
 	a.PingAll()
-	tick := time.Tick(time.Second * 60)
+	tick := time.Tick(time.Second * 5)
 	for range tick {
 		a.PingAll()
 	}
@@ -86,18 +86,17 @@ func (a *App) startup(ctx context.Context) {
 		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db.sha256sum")
 		if err2 == nil {
 			sum256 := sha256.Sum256(file)
-			fmt.Println(fmt.Sprintf("%x", sum256), string(rdata))
 			if fmt.Sprintf("%x", sum256) != string(rdata) {
 				rdata, err2 = httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
 				if err2 == nil {
-					_ = os.WriteFile(geoPath, rdata, 0644)
+					_ = os.WriteFile(geoPath, rdata, 0o644)
 				}
 			}
 		}
 	} else {
 		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
 		if err2 == nil {
-			_ = os.WriteFile(geoPath, rdata, 0644)
+			_ = os.WriteFile(geoPath, rdata, 0o644)
 		}
 	}
 	geoPath = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geosite.db")
@@ -106,24 +105,26 @@ func (a *App) startup(ctx context.Context) {
 		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db.sha256sum")
 		if err2 == nil {
 			sum256 := sha256.Sum256(file)
-			fmt.Println(fmt.Sprintf("%x", sum256), string(rdata))
 			if fmt.Sprintf("%x", sum256) != string(rdata) {
 				rdata, err2 = httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
 				if err2 == nil {
-					_ = os.WriteFile(geoPath, rdata, 0644)
+					_ = os.WriteFile(geoPath, rdata, 0o644)
 				}
 			}
 		}
 	} else {
 		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
 		if err2 == nil {
-			_ = os.WriteFile(geoPath, rdata, 0644)
+			_ = os.WriteFile(geoPath, rdata, 0o644)
 		}
 	}
 }
 func (a *App) PingAll() {
 	group := sync.WaitGroup{}
 	for i := range a.conf.PeerList {
+		if a.conf.PeerList[i].Protocol == "direct" {
+			continue
+		}
 		group.Add(1)
 		peer := a.conf.PeerList[i]
 		go func() {
@@ -160,16 +161,31 @@ func (a *App) Add(token string) string {
 	}
 	err, peer := config.ParsePeer(token)
 	if err != nil {
+		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+			Type:    runtime.ErrorDialog,
+			Title:   "导入错误",
+			Message: err.Error(),
+		})
 		return err.Error()
 	}
 	for _, p := range a.conf.PeerList {
 		if p.Name == peer.Name {
+			_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+				Type:    runtime.ErrorDialog,
+				Title:   "导入错误",
+				Message: fmt.Sprintf("节点 %s 已存在", peer.Name),
+			})
 			return fmt.Sprintf("peer %s already exists", peer.Name)
 		}
 	}
 	a.conf.PeerList = append(a.conf.PeerList, peer)
 	err = config.SaveConfig(a.conf)
 	if err != nil {
+		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+			Type:    runtime.ErrorDialog,
+			Title:   "导入错误",
+			Message: err.Error(),
+		})
 		return err.Error()
 	}
 	return "ok"
@@ -211,10 +227,20 @@ func (a *App) Start() string {
 	var err error
 	a.box, err = client.Client(a.gamePeer, a.httpPeer, a.processList)
 	if err != nil {
+		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+			Type:    runtime.ErrorDialog,
+			Title:   "加速失败",
+			Message: err.Error(),
+		})
 		return err.Error()
 	}
 	err = a.box.Start()
 	if err != nil {
+		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+			Type:    runtime.ErrorDialog,
+			Title:   "加速失败",
+			Message: err.Error(),
+		})
 		return err.Error()
 	}
 	return "ok"
@@ -227,6 +253,11 @@ func (a *App) Stop() string {
 	}
 	err := a.box.Close()
 	if err != nil {
+		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+			Type:    runtime.ErrorDialog,
+			Title:   "停止失败",
+			Message: err.Error(),
+		})
 		return err.Error()
 	}
 	a.box = nil

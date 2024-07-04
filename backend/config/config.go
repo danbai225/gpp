@@ -34,11 +34,11 @@ func InitConfig() {
 	if err != nil {
 		_path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
 	}
-	_ = os.MkdirAll(filepath.Dir(_path), os.ModeDir|os.ModePerm)
+	_ = os.MkdirAll(filepath.Dir(_path), 0o755)
 	_, err = os.Stat(_path)
 	if err != nil {
 		file, _ := json.Marshal(Config{PeerList: make([]*Peer, 0)})
-		err = os.WriteFile(_path, file, os.ModePerm)
+		err = os.WriteFile(_path, file, 0o644)
 	}
 }
 func LoadConfig() (*Config, error) {
@@ -76,7 +76,7 @@ func SaveConfig(config *Config) error {
 		_path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
 	}
 	file, _ := json.Marshal(config)
-	return os.WriteFile(_path, file, os.ModePerm)
+	return os.WriteFile(_path, file, 0o644)
 }
 func ParsePeer(token string) (error, *Peer) {
 	split := strings.Split(token, "#")
@@ -93,7 +93,7 @@ func ParsePeer(token string) (error, *Peer) {
 	split = strings.Split(token, "@")
 	protocol := strings.ReplaceAll(split[0], "gpp://", "")
 	switch protocol {
-	case "vless", "shadowsocks", "socks":
+	case "vless", "shadowsocks", "socks", "hysteria2":
 	default:
 		return fmt.Errorf("unknown protocol: %s", protocol), nil
 	}

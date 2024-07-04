@@ -13,6 +13,7 @@ echo "请选择一个选项："
 echo "1) shadowsocks"
 echo "2) socks"
 echo "3) vless"
+echo "4) hysteria2"
 read -p "输入选项 (1-3): " input
 PROTOCOL="vless"
 case $input in
@@ -24,6 +25,9 @@ case $input in
         ;;
     3)
         PROTOCOL="vless"
+        ;;
+    4)
+        PROTOCOL="hysteria2"
         ;;
     *)
         echo "无效选项: $input"
@@ -89,13 +93,13 @@ if [ "\$1" = "start" ]; then
     echo "Starting gpp"
     nohup ${INSTALL_PATH}/gpp > "\$log_file" 2>&1 &
     echo \$! > "\$pid_file"
-    echo "stm started with pid \$!"
+    echo "gpp started with pid \$!"
     exit 0
   fi
 elif [ "\$1" = "stop" ]; then
   if [ -f "\$pid_file" ]; then
     pid=\$(cat "\$pid_file")
-    echo "Stopping stm with pid \$pid"
+    echo "Stopping gpp with pid \$pid"
     kill "\$pid"
     rm "\$pid_file"
     exit 0
@@ -112,7 +116,6 @@ EOF
 chmod +x run.sh
 
 echo "安装完成,请执行 ${INSTALL_PATH}/run.sh start 启动服务端,执行 ${INSTALL_PATH}/run.sh stop 停止服务端"
-#fmt.Sprintf("gpp://%s@%s:%d/%s", config.Protocol, ipStr, config.Port, config.UUID
 result="gpp://$PROTOCOL@$NET_IP:$LISTEN_PORT/$UUID"
 encoded_result=$(echo -n $result | base64)
-echo "导入Token：${encoded_result}"
+echo "导入链接：${encoded_result}"
