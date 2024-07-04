@@ -1,4 +1,4 @@
-module client
+module github.com/danbai225/gpp
 
 go 1.22
 
@@ -6,12 +6,15 @@ toolchain go1.22.1
 
 require (
 	github.com/cloverstd/tcping v0.1.1
-	github.com/energye/systray v1.0.2
+	github.com/godbus/dbus/v5 v5.1.0
 	github.com/google/uuid v1.6.0
+	github.com/sagernet/sing v0.4.1
 	github.com/sagernet/sing-box v1.9.3
 	github.com/sagernet/sing-dns v0.2.0
 	github.com/shirou/gopsutil/v3 v3.24.5
+	github.com/tevino/abool v0.0.0-20220530134649-2bfc934cb23c
 	github.com/wailsapp/wails/v2 v2.9.1
+	golang.org/x/sys v0.21.0
 )
 
 require (
@@ -29,7 +32,6 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
-	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gofrs/uuid/v5 v5.2.0 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/pprof v0.0.0-20240625030939-27f56978b8b0 // indirect
@@ -67,7 +69,6 @@ require (
 	github.com/sagernet/netlink v0.0.0-20240612041022-b9a21c07ac6a // indirect
 	github.com/sagernet/quic-go v0.45.1-beta.2 // indirect
 	github.com/sagernet/reality v0.0.0-20230406110435-ee17307e7691 // indirect
-	github.com/sagernet/sing v0.4.1 // indirect
 	github.com/sagernet/sing-mux v0.2.0 // indirect
 	github.com/sagernet/sing-quic v0.2.0-beta.12 // indirect
 	github.com/sagernet/sing-shadowsocks v0.2.6 // indirect
@@ -81,7 +82,6 @@ require (
 	github.com/sagernet/wireguard-go v0.0.0-20231215174105-89dec3b2f3e8 // indirect
 	github.com/sagernet/ws v0.0.0-20231204124109-acfe8907c854 // indirect
 	github.com/samber/lo v1.39.0 // indirect
-	github.com/tevino/abool v0.0.0-20220530134649-2bfc934cb23c // indirect
 	github.com/tkrajina/go-reflector v0.5.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
@@ -98,7 +98,6 @@ require (
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect

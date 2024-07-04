@@ -1,9 +1,9 @@
 package client
 
 import (
-	"client/backend/config"
 	"context"
 	"fmt"
+	"github.com/danbai225/gpp/backend/config"
 	"github.com/google/uuid"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/option"

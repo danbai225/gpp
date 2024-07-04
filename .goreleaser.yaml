@@ -1,6 +1,6 @@
 builds:
   - id: box
-    dir: server
+    dir: .
     main: ./cmd/gpp/main.go
     binary: gpp
     tags: with_quic

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"client/backend/config"
 	"embed"
+	"github.com/danbai225/gpp/backend/config"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"

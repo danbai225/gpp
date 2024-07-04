@@ -1,14 +1,14 @@
 package main
 
 import (
-	"client/backend/client"
-	"client/backend/config"
-	"client/backend/data"
 	"context"
 	"crypto/sha256"
 	"fmt"
 	"github.com/cloverstd/tcping/ping"
-	"github.com/energye/systray"
+	"github.com/danbai225/gpp/backend/client"
+	"github.com/danbai225/gpp/backend/config"
+	"github.com/danbai225/gpp/backend/data"
+	"github.com/danbai225/gpp/systray"
 	box "github.com/sagernet/sing-box"
 	"github.com/shirou/gopsutil/v3/net"
 	"github.com/wailsapp/wails/v2/pkg/runtime"

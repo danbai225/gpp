@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/danbai225/gpp/core"
+	"github.com/danbai225/gpp/server/core"
 	"github.com/google/uuid"
 	"os"
 )

@@ -1,6 +1,6 @@
 package data
 
-import "client/backend/config"
+import "github.com/danbai225/gpp/backend/config"
 
 type Status struct {
 	Running  bool         `json:"running"`
