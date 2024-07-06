@@ -22,11 +22,9 @@
 ## 服务的搭建
 
 在优质线路服务器上运行安装脚本
-快速安装服务端脚本（仅支持linux_amd64）
+快速安装服务端脚本（仅支持linux）
 ```bash
-wget https://raw.githubusercontent.com/danbai225/gpp/main/server/install.sh
-chmod +x install.sh
-./install.sh
+bash <(curl -sL https://raw.githubusercontent.com/danbai225/gpp/main/server/install.sh)
 ```
 根据提示安装完成后会输出导入链接
 
