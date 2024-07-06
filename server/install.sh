@@ -7,8 +7,14 @@ read -p "请输入监听地址（默认0.0.0.0）: " LISTEN_ADDRESS
 LISTEN_ADDRESS=${LISTEN_ADDRESS:-"0.0.0.0"}
 read -p "请输入监听端口（默认5123）: " LISTEN_PORT
 LISTEN_PORT=${LISTEN_PORT:-"5123"}
-read -p "请输入当前服务器的入口IP: " NET_IP
-NET_IP=${NET_IP:-"127.0.0.1"}
+read -p "请输入你的客户端入口地址(有中转就是中转地址不填默认当前服务器ip+端口): " NET_ADDR
+NET_ADDR=${NET_ADDR:-""}
+# 如果NET_ADDR变量为空，则获取外网IP地址
+if [ -z "$NET_ADDR" ]; then
+    NET_ADDR=$(curl ipv4.ip.sb)
+    NET_ADDR="$NET_ADDR:$LISTEN_PORT"
+fi
+
 echo "请选择一个选项："
 echo "1) shadowsocks"
 echo "2) socks"
@@ -38,7 +44,7 @@ echo "您选择的协议为: $PROTOCOL"
 echo "您输入的监听地址为: $LISTEN_ADDRESS"
 echo "您输入的监听端口为: $LISTEN_PORT"
 echo "安装路径为: $INSTALL_PATH"
-echo "当前服务器的入口IP为: $NET_IP"
+echo "您的入口地址: $NET_ADDR"
 # 检查目录是否存在，如果不存在则创建
 if [ ! -d "$INSTALL_PATH" ]; then
   mkdir -p "$INSTALL_PATH"
@@ -135,7 +141,9 @@ chmod +x run.sh
 
 echo "安装完成,请执行 ${INSTALL_PATH}/run.sh start 启动服务端,执行 ${INSTALL_PATH}/run.sh stop 停止服务端"
 read -p "请为您的节点取一个名字: " Name
-Name=${Name:-"$NET_IP-$LISTEN_PORT"}
-result="gpp://$PROTOCOL@$NET_IP:$LISTEN_PORT/$UUID"
+Name=${Name:-"$NET_ADDR"}
+echo "入口地址是: $NET_ADDR"
+result="gpp://$PROTOCOL@$NET_ADDR/$UUID"
+
 encoded_result=$(echo -n $result | base64)
 echo "导入链接：${encoded_result}#$Name"
