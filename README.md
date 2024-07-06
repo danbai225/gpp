@@ -1,15 +1,20 @@
 # gpp
 
-基于[sing-box](https://github.com/SagerNet/sing-box)的加速器，使用golang编写，支持windows、linux、macos
+基于[sing-box](https://github.com/SagerNet/sing-box)+[wails](https://github.com/wailsapp/wails)的加速器，使用golang编写，支持windows、linux、macos
 
 - http分流
 - gui客户端
 - 基于tun代理
 
-![微信图片_20240424204203.png](https://imgc.cc/2024/04/24/6628fecfb8f06.png)
+  [qq交流群936204503](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=syMCYJm6Isz_yAxUfrQetpNGioUdpdjO&authKey=lkUyXpKkdAzUwOZYq0m%2BH5Y%2FvAU3XegyxWTm5fM1%2BxOZDdBHJUF%2BODVeNg9MraDl&noverify=0&group_code=936204503)
 
-建议禁用ipv6使用加速器，
-[qq交流群936204503](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=syMCYJm6Isz_yAxUfrQetpNGioUdpdjO&authKey=lkUyXpKkdAzUwOZYq0m%2BH5Y%2FvAU3XegyxWTm5fM1%2BxOZDdBHJUF%2BODVeNg9MraDl&noverify=0&group_code=936204503)
+# 截图
+
+|                                                         |                                                         |
+|---------------------------------------------------------|---------------------------------------------------------|
+| ![高风险高回报](https://imgc.cc/2024/07/06/66888d266d829.png) | ![高风险低回报](https://imgc.cc/2024/07/06/66888d3c49609.png) |
+| ![低风险高回报](https://imgc.cc/2024/07/06/66888d4ea1807.png) | ![低风险低回报](https://imgc.cc/2024/07/06/66888d51e610d.png) |
+
 
 # 下载
 
