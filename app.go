@@ -49,6 +49,7 @@ func (a *App) systemTray() {
 		a.Stop()
 		runtime.Quit(a.ctx)
 		systray.Quit()
+		time.Sleep(time.Second)
 		os.Exit(0)
 	})
 
