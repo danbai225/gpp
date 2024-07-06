@@ -11,15 +11,31 @@
 
 # 截图
 
-|                                                         |                                                         |
-|---------------------------------------------------------|---------------------------------------------------------|
-| ![高风险高回报](https://imgc.cc/2024/07/06/66888d266d829.png) | ![高风险低回报](https://imgc.cc/2024/07/06/66888d3c49609.png) |
-| ![低风险高回报](https://imgc.cc/2024/07/06/66888d4ea1807.png) | ![低风险低回报](https://imgc.cc/2024/07/06/66888d51e610d.png) |
+|                                                         |                                                       |
+|---------------------------------------------------------|-------------------------------------------------------|
+| ![界面截图](https://imgc.cc/2024/07/06/66888d266d829.png)   | ![英雄联盟](https://imgc.cc/2024/07/06/66888d3c49609.png) |
+| ![战地2042](https://imgc.cc/2024/07/06/66888d4ea1807.png) | ![绝地求生](https://imgc.cc/2024/07/06/66888d51e610d.png) |
 
 
-# 下载
+# 使用教程
 
-[从releases下载](https://github.com/danbai225/gpp/releases)
+## 服务的搭建
+
+在优质线路服务器上运行安装脚本
+快速安装服务端脚本（仅支持linux_amd64）
+```bash
+wget https://raw.githubusercontent.com/danbai225/gpp/main/server/install.sh
+chmod +x install.sh
+./install.sh
+```
+根据提示安装完成后会输出导入链接
+
+# 运行客户端
+
+[从releases下载](https://github.com/danbai225/gpp/releases)下载对应系统的客户端以管理员身份运行
+
+点击页面上的`Game`或`Http`字样弹出节点列表窗口，在下方粘贴服务端的链接完成节点导入。
+在节点列表选择你的加速节点，如何开始加速。
 
 # 编译
 
@@ -40,15 +56,3 @@ gui的客户端需要自建构建，需要安装`wails`、`npm`和`golang`，安
 ```
 wails build
 ```
-
-# 快速安装服务端脚本（仅支持linux）
-
-```bash
-wget https://raw.githubusercontent.com/danbai225/gpp/main/server/install.sh
-chmod +x install.sh
-./install.sh
-```
-
-# 导入节点
-
-复制服务端日志输出的链接到客户端导入,或者自己编辑`config.json`
