@@ -57,9 +57,27 @@ cat << EOF > config.json
 }
 EOF
 
+echo "检测系统架构..."
+
+ARCH=$(uname -m)
+
+case $ARCH in
+    x86_64)
+        ARCH="amd64"
+        ;;
+    aarch64)
+        ARCH="arm64"
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+esac
+
 echo "下载服务端 。。。"
 
-latest_release_url=$(curl -s https://api.github.com/repos/danbai225/gpp/releases/latest | grep "browser_download_url.*_linux_amd64.tar.gz" | cut -d : -f 2,3 | tr -d \")
+# 动态地拼接下载URL
+latest_release_url=$(curl -s https://api.github.com/repos/danbai225/gpp/releases/latest | grep "browser_download_url.*_linux_$ARCH.tar.gz" | cut -d : -f 2,3 | tr -d \")
 
 filename=$(basename $latest_release_url)
 
@@ -71,8 +89,8 @@ echo "Download complete"
 
 echo "Extracting files"
 
-tar -xzf $filename gpp
-
+tar -xzf $filename gpp-server
+mv gpp-server gpp
 echo "Extraction complete"
 
 rm $filename
