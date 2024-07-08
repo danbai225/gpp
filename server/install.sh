@@ -1,4 +1,10 @@
 #!/bin/bash
+# 使用 command -v 检查 uuidgen 是否存在
+if ! command -v uuidgen &> /dev/null
+then
+    echo "错误: uuidgen 未安装。请安装后继续。"
+    exit 1
+fi
 echo "欢迎使用 gpp 服务端安装脚本"
 read -p "输入安装路径 (默认是 /usr/local/gpp): " INSTALL_PATH
 # 设置默认安装路径
@@ -20,7 +26,7 @@ echo "1) shadowsocks"
 echo "2) socks"
 echo "3) vless"
 echo "4) hysteria2"
-read -p "输入选项 (1-3): " input
+read -p "输入选项 (1-4): " input
 PROTOCOL="vless"
 case $input in
     1)
