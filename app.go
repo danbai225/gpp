@@ -21,21 +21,19 @@ import (
 
 // App struct
 type App struct {
-	ctx         context.Context
-	conf        *config.Config
-	gamePeer    *config.Peer
-	httpPeer    *config.Peer
-	box         *box.Box
-	processList []string
-	lock        sync.Mutex
+	ctx      context.Context
+	conf     *config.Config
+	gamePeer *config.Peer
+	httpPeer *config.Peer
+	box      *box.Box
+	lock     sync.Mutex
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
 	conf := config.Config{}
 	app := App{
-		conf:        &conf,
-		processList: make([]string, 0),
+		conf: &conf,
 	}
 	return &app
 }
@@ -237,7 +235,7 @@ func (a *App) Start() string {
 		return "running"
 	}
 	var err error
-	a.box, err = client.Client(a.gamePeer, a.httpPeer, a.processList)
+	a.box, err = client.Client(a.gamePeer, a.httpPeer)
 	if err != nil {
 		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 			Type:    runtime.ErrorDialog,

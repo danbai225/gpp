@@ -91,7 +91,7 @@ func getOUt(peer *config.Peer) option.Outbound {
 	out.Tag = uuid.New().String()
 	return out
 }
-func Client(gamePeer, httpPeer *config.Peer, processList []string) (*box.Box, error) {
+func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 	home, _ := os.UserHomeDir()
 	options := box.Options{
 		Context: context.Background(),
@@ -237,53 +237,83 @@ func Client(gamePeer, httpPeer *config.Peer, processList []string) (*box.Box, er
 			},
 		},
 	}
-	if processList != nil && len(processList) > 0 {
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{
-			Type: "logical",
-			LogicalOptions: option.LogicalRule{
-				Rules: []option.Rule{
-					{
-						Type: "default",
-						DefaultOptions: option.DefaultRule{
-							ProcessPath: processList,
-						},
-					},
+
+	options.Options.Route.Rules = append(options.Options.Route.Rules, []option.Rule{
+		{
+			Type: "default",
+			DefaultOptions: option.DefaultRule{
+				Network:  option.Listable[string]{"udp"},
+				Port:     []uint16{443},
+				Outbound: "block",
+			},
+		},
+		{
+			Type: "default",
+			DefaultOptions: option.DefaultRule{
+				Geosite:  option.Listable[string]{"cn"},
+				Outbound: "direct",
+			},
+		},
+		{
+			Type: "default",
+			DefaultOptions: option.DefaultRule{
+				GeoIP:    option.Listable[string]{"cn", "private"},
+				Outbound: "direct",
+			},
+		},
+		{
+			Type: "default",
+			DefaultOptions: option.DefaultRule{
+				DomainSuffix: option.Listable[string]{"vivox.com",
+					"cm.steampowered.com",
+					"steamchina.com",
+					"steamcontent.com",
+					"steamserver.net",
+					"steamusercontent.com",
 				},
 				Outbound: "direct",
-				Invert:   true,
 			},
-		})
-	} else {
-		options.Options.Route.Rules = append(options.Options.Route.Rules, []option.Rule{
-			{
-				Type: "default",
-				DefaultOptions: option.DefaultRule{
-					Network:  option.Listable[string]{"udp"},
-					Port:     []uint16{443},
-					Outbound: "block",
-				},
+		}, {
+			Type: "default",
+			DefaultOptions: option.DefaultRule{
+				SourceIPCIDR: option.Listable[string]{"63.251.140.0/24",
+					"69.25.124.0/23",
+					"70.42.8.0/24",
+					"70.42.198.0/23",
+					"74.201.102.0/23",
+					"74.201.106.0/23",
+					"74.201.105.108/30",
+					"85.236.96.0/21",
+					"188.42.95.0/24",
+					"188.42.147.0/24",
+					"216.52.53.0/24"},
+				Outbound: "direct",
 			},
-			{
-				Type: "default",
-				DefaultOptions: option.DefaultRule{
-					Geosite:  option.Listable[string]{"cn"},
-					Outbound: "direct",
-				},
+		}, {
+			Type: "default",
+			DefaultOptions: option.DefaultRule{
+				Domain: option.Listable[string]{"csgo.wmsj.cn",
+					"dl.steam.clngaa.com",
+					"dl.steam.ksyna.com",
+					"dota2.wmsj.cn",
+					"st.dl.bscstorage.net",
+					"st.dl.eccdnx.com",
+					"st.dl.pinyuncloud.com",
+					"steampipe.steamcontent.tnkjmec.com",
+					"steampowered.com.8686c.com",
+					"steamstatic.com.8686c.com",
+					"wmsjsteam.com",
+					"xz.pphimalayanrt.com"},
+				Outbound: "direct",
 			},
-			{
-				Type: "default",
-				DefaultOptions: option.DefaultRule{
-					GeoIP:    option.Listable[string]{"cn", "private"},
-					Outbound: "direct",
-				},
-			},
-		}...)
-		if httpPeer != nil && httpPeer.Name != gamePeer.Name {
-			out := getOUt(httpPeer)
-			options.Options.Outbounds = append(options.Options.Outbounds, out)
-			options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http", "quic", "tls"}, Outbound: out.Tag}})
-		}
+		},
+	}...)
+	if httpPeer != nil && httpPeer.Name != gamePeer.Name {
+		out := getOUt(httpPeer)
+		options.Options.Outbounds = append(options.Options.Outbounds, out)
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http", "quic", "tls"}, Outbound: out.Tag}})
 	}
+
 	var instance, err = box.New(options)
 	if err != nil {
 		return nil, err
