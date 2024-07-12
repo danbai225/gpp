@@ -54,3 +54,50 @@ gui的客户端需要自建构建，需要安装`wails`、`npm`和`golang`，安
 ```
 wails build
 ```
+
+# config解释
+
+## 服务端
+
+- protocol 协议
+- port 端口
+- addr 绑定地址
+- uuid 认证用途
+
+```json
+{
+  "protocol": "vless",
+  "port": 5123,
+  "addr": "0.0.0.0",
+  "uuid":"xxx-xx-xx-xx-xxx"
+}
+```
+
+## 客户端
+
+- peer_list 节点列表
+- proxy_dns 代理dns
+- local_dns 直连dns
+
+```json
+{
+    "peer_list": [
+        {
+            "name": "直连",
+            "protocol": "direct",
+            "port": 0,
+            "addr": "direct",
+            "uuid": ""
+        },
+        {
+            "name": "hk",
+            "protocol": "vless",
+            "port": 5123,
+            "addr": "xxx.xx.xx.xx",
+            "uuid": "xxx-xxx-xx-xxx-xxx"
+        }
+    ],
+    "proxy_dns": "8.8.8.8",
+    "local_dns": "223.5.5.5"
+}
+```
