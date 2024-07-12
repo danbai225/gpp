@@ -59,6 +59,8 @@ wails build
 
 ## 服务端
 
+配置存放为服务端二进制文件当前目录的`config.json`
+
 - protocol 协议
 - port 端口
 - addr 绑定地址
@@ -74,6 +76,8 @@ wails build
 ```
 
 ## 客户端
+
+配置存放为客户端二进制文件当前目录的`config.json`或者用户目录下`<userhome>/.gpp/config.json`
 
 - peer_list 节点列表
 - proxy_dns 代理dns
