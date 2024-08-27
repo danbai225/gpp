@@ -26,6 +26,17 @@ func getOUt(peer *config.Peer) option.Outbound {
 				},
 				Method:   "xchacha20-ietf-poly1305",
 				Password: peer.UUID,
+				UDPOverTCP: &option.UDPOverTCPOptions{
+					Enabled: true,
+					Version: 2,
+				},
+				Multiplex: &option.OutboundMultiplexOptions{
+					Enabled:        true,
+					Protocol:       "h2mux",
+					MaxConnections: 16,
+					MinStreams:     32,
+					Padding:        false,
+				},
 			},
 		}
 	case "socks":
@@ -84,6 +95,13 @@ func getOUt(peer *config.Peer) option.Outbound {
 						MaxEarlyData:        2048,
 						EarlyDataHeaderName: "Sec-WebSocket-Protocol",
 					},
+				},
+				Multiplex: &option.OutboundMultiplexOptions{
+					Enabled:        true,
+					Protocol:       "h2mux",
+					MaxConnections: 16,
+					MinStreams:     32,
+					Padding:        false,
 				},
 			},
 		}
