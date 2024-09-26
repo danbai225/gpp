@@ -26,6 +26,8 @@
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/danbai225/gpp/main/server/install.sh)
 ```
+然后执行/usr/local/gpp/run.sh start启动服务端
+
 根据提示安装完成后会输出导入链接
 
 # 运行客户端
