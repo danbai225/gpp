@@ -13,7 +13,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up Go
         uses: actions/setup-go@v5
-        run: go version
       - name: Set up dependencies
         run: sudo apt-get update && sudo apt-get install gcc musl-dev -y
       - name: Run GoReleaser
