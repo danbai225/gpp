@@ -19,12 +19,18 @@ type Peer struct {
 	UUID     string `json:"uuid"`
 	Ping     uint   `json:"ping"`
 }
+type Rule struct {
+	ProcessName      []string `json:"process_name"`
+	ProcessPathRegex []string `json:"process_path_regex"`
+}
 type Config struct {
-	PeerList []*Peer `json:"peer_list"`
-	GamePeer string  `json:"game_peer"`
-	HTTPPeer string  `json:"http_peer"`
-	ProxyDNS string  `json:"proxy_dns"`
-	LocalDNS string  `json:"local_dns"`
+	PeerList   []*Peer `json:"peer_list"`
+	ProxyRule  Rule    `json:"proxy_rule"`
+	DirectRule Rule    `json:"direct_rule"`
+	GamePeer   string  `json:"game_peer"`
+	HTTPPeer   string  `json:"http_peer"`
+	ProxyDNS   string  `json:"proxy_dns"`
+	LocalDNS   string  `json:"local_dns"`
 }
 
 func InitConfig() {
@@ -61,10 +67,10 @@ func LoadConfig() (*Config, error) {
 		conf.PeerList = append(conf.PeerList, &Peer{Name: "直连", Protocol: "direct", Port: 0, Addr: "127.0.0.1", UUID: "", Ping: 0})
 	}
 	if conf.ProxyDNS == "" {
-		conf.ProxyDNS = "8.8.8.8"
+		conf.ProxyDNS = "https://1.1.1.1/dns-query"
 	}
 	if conf.LocalDNS == "" {
-		conf.LocalDNS = "223.5.5.5"
+		conf.LocalDNS = "https://223.5.5.5/dns-query"
 	}
 	return conf, err
 }

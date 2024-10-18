@@ -29,8 +29,6 @@ func Server() {
 	if config.UUID == "" {
 		config.UUID = uuid.New().String()
 	}
-	dir, _ := os.Getwd()
-	_ = os.WriteFile("C:\\Users\\danba\\gpp.pwd", []byte(dir+"\n"+config.UUID), 0644)
 	_ = core.Server(config)
 }
 func main() {}

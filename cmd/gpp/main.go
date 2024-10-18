@@ -10,10 +10,6 @@ import (
 	"syscall"
 )
 
-type ip struct {
-	IP string `json:"ip"`
-}
-
 func main() {
 	path := "config.json"
 	home, _ := os.UserHomeDir()

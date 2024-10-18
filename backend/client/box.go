@@ -24,7 +24,7 @@ func getOUt(peer *config.Peer) option.Outbound {
 					Server:     peer.Addr,
 					ServerPort: peer.Port,
 				},
-				Method:   "xchacha20-ietf-poly1305",
+				Method:   "aes-256-gcm",
 				Password: peer.UUID,
 				UDPOverTCP: &option.UDPOverTCPOptions{
 					Enabled: true,
@@ -88,14 +88,6 @@ func getOUt(peer *config.Peer) option.Outbound {
 					ServerPort: peer.Port,
 				},
 				UUID: peer.UUID,
-				Transport: &option.V2RayTransportOptions{
-					Type: "ws",
-					WebsocketOptions: option.V2RayWebsocketOptions{
-						Path:                fmt.Sprintf("/%s", peer.UUID),
-						MaxEarlyData:        2048,
-						EarlyDataHeaderName: "Sec-WebSocket-Protocol",
-					},
-				},
 				Multiplex: &option.OutboundMultiplexOptions{
 					Enabled:        true,
 					Protocol:       "h2mux",
@@ -109,8 +101,10 @@ func getOUt(peer *config.Peer) option.Outbound {
 	out.Tag = uuid.New().String()
 	return out
 }
-func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
+func Client(gamePeer, httpPeer *config.Peer, proxy config.Rule, direct config.Rule, proxyDNS, localDNS string) (*box.Box, error) {
 	home, _ := os.UserHomeDir()
+	proxyOut := getOUt(gamePeer)
+	proxyOut.Tag = "proxy"
 	options := box.Options{
 		Context: context.Background(),
 		Options: option.Options{
@@ -125,12 +119,13 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 				Servers: []option.DNSServerOptions{
 					{
 						Tag:      "proxyDns",
-						Address:  "8.8.8.8",
+						Address:  proxyDNS,
+						Detour:   "proxy",
 						Strategy: option.DomainStrategy(dns.DomainStrategyUseIPv4),
 					},
 					{
 						Tag:      "localDns",
-						Address:  "223.5.5.5",
+						Address:  localDNS,
 						Detour:   "direct",
 						Strategy: option.DomainStrategy(dns.DomainStrategyUseIPv4),
 					},
@@ -141,17 +136,6 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 					},
 				},
 				Rules: []option.DNSRule{
-					{
-						Type: "default",
-						DefaultOptions: option.DefaultDNSRule{
-							Server: "localDns",
-							Domain: []string{
-								"ghproxy.com",
-								"cdn.jsdelivr.net",
-								"testingcf.jsdelivr.net",
-							},
-						},
-					},
 					{
 						Type: "default",
 						DefaultOptions: option.DefaultDNSRule{
@@ -183,7 +167,7 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 
 						InterfaceName: "utun225",
 						MTU:           9000,
-						Inet4Address: option.Listable[netip.Prefix]{
+						Address: option.Listable[netip.Prefix]{
 							netip.MustParsePrefix("172.225.0.1/30"),
 						},
 						AutoRoute:              true,
@@ -214,12 +198,12 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 				AutoDetectInterface: true,
 				GeoIP: &option.GeoIPOptions{
 					Path:           fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geoip.db"),
-					DownloadURL:    "https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
+					DownloadURL:    "https://ghp.ci/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
 					DownloadDetour: "direct",
 				},
 				Geosite: &option.GeositeOptions{
 					Path:           fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geosite.db"),
-					DownloadURL:    "https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
+					DownloadURL:    "https://ghp.ci/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
 					DownloadDetour: "direct",
 				},
 				Rules: []option.Rule{
@@ -240,7 +224,7 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 				},
 			},
 			Outbounds: []option.Outbound{
-				getOUt(gamePeer),
+				proxyOut,
 				{
 					Type: "block",
 					Tag:  "block",
@@ -326,12 +310,30 @@ func Client(gamePeer, httpPeer *config.Peer) (*box.Box, error) {
 			},
 		},
 	}...)
+	// direct
+	if len(direct.ProcessName) > 0 {
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessName: direct.ProcessName, Outbound: "direct"}})
+	}
+	if len(direct.ProcessPathRegex) > 0 {
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessPathRegex: direct.ProcessPathRegex, Outbound: "direct"}})
+	}
+	// proxy
+	if len(proxy.ProcessName) > 0 {
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessName: proxy.ProcessName, Outbound: "proxy"}})
+	}
+	if len(proxy.ProcessPathRegex) > 0 {
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessPathRegex: proxy.ProcessPathRegex, Outbound: "proxy"}})
+	}
+	if len(direct.ProcessName) == 0 && len(proxy.ProcessName) == 0 && (len(proxy.ProcessPathRegex) > 0 || len(direct.ProcessPathRegex) > 0) {
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessName: option.Listable[string]{uuid.New().String()}, Outbound: "direct"}})
+	}
+	// http
 	if httpPeer != nil && httpPeer.Name != gamePeer.Name {
 		out := getOUt(httpPeer)
 		options.Options.Outbounds = append(options.Options.Outbounds, out)
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http", "quic", "tls"}, Outbound: out.Tag}})
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http"}, Outbound: out.Tag}})
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Network: option.Listable[string]{"tcp"}, Port: []uint16{80, 443, 8080, 8443}, Outbound: out.Tag}})
 	}
-
 	var instance, err = box.New(options)
 	if err != nil {
 		return nil, err

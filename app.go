@@ -10,9 +10,10 @@ import (
 	"github.com/danbai225/gpp/backend/data"
 	"github.com/danbai225/gpp/systray"
 	box "github.com/sagernet/sing-box"
-	"github.com/shirou/gopsutil/v3/net"
+	netutils "github.com/shirou/gopsutil/v3/net"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"sync"
@@ -50,8 +51,47 @@ func (a *App) systemTray() {
 		time.Sleep(time.Second)
 		os.Exit(0)
 	})
-
 	systray.SetOnClick(func(menu systray.IMenu) { runtime.WindowShow(a.ctx) })
+	go func() {
+		listener, err := net.Listen("tcp", "127.0.0.1:54713")
+		if err != nil {
+			_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+				Type:    runtime.ErrorDialog,
+				Title:   "监听错误",
+				Message: fmt.Sprintln("Error listening0:", err),
+			})
+		}
+		var conn net.Conn
+		for {
+			conn, err = listener.Accept()
+			if err != nil {
+				_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+					Type:    runtime.ErrorDialog,
+					Title:   "监听错误",
+					Message: fmt.Sprintln("Error listening1:", err),
+				})
+				continue
+			}
+			// 读取指令
+			buffer := make([]byte, 1024)
+			n, err := conn.Read(buffer)
+			if err != nil {
+				_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+					Type:    runtime.ErrorDialog,
+					Title:   "监听错误",
+					Message: fmt.Sprintln("Error read:", err),
+				})
+				continue
+			}
+			command := string(buffer[:n])
+			// 如果收到显示窗口的命令，则显示窗口
+			if command == "SHOW_WINDOW" {
+				// 展示窗口的代码
+				runtime.WindowShow(a.ctx)
+			}
+			_ = conn.Close()
+		}
+	}()
 }
 
 func (a *App) testPing() {
@@ -83,18 +123,18 @@ func (a *App) startup(ctx context.Context) {
 	geoPath := fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geoip.db")
 	file, err := os.ReadFile(geoPath)
 	if err == nil {
-		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db.sha256sum")
+		rdata, err2 := httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db.sha256sum")
 		if err2 == nil {
 			sum256 := sha256.Sum256(file)
 			if fmt.Sprintf("%x", sum256) != string(rdata) {
-				rdata, err2 = httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
+				rdata, err2 = httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
 				if err2 == nil {
 					_ = os.WriteFile(geoPath, rdata, 0o644)
 				}
 			}
 		}
 	} else {
-		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
+		rdata, err2 := httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
 		if err2 == nil {
 			_ = os.WriteFile(geoPath, rdata, 0o644)
 		}
@@ -102,18 +142,18 @@ func (a *App) startup(ctx context.Context) {
 	geoPath = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geosite.db")
 	file, err = os.ReadFile(geoPath)
 	if err == nil {
-		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db.sha256sum")
+		rdata, err2 := httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db.sha256sum")
 		if err2 == nil {
 			sum256 := sha256.Sum256(file)
 			if fmt.Sprintf("%x", sum256) != string(rdata) {
-				rdata, err2 = httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
+				rdata, err2 = httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
 				if err2 == nil {
 					_ = os.WriteFile(geoPath, rdata, 0o644)
 				}
 			}
 		}
 	} else {
-		rdata, err2 := httpGet("https://mirror.ghproxy.com/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
+		rdata, err2 := httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
 		if err2 == nil {
 			_ = os.WriteFile(geoPath, rdata, 0o644)
 		}
@@ -150,7 +190,7 @@ func (a *App) Status() *data.Status {
 		HttpPeer: a.httpPeer,
 	}
 
-	counters, _ := net.IOCounters(true)
+	counters, _ := netutils.IOCounters(true)
 	for _, counter := range counters {
 		if counter.Name == "utun225" {
 			status.Up = counter.BytesSent
@@ -235,7 +275,7 @@ func (a *App) Start() string {
 		return "running"
 	}
 	var err error
-	a.box, err = client.Client(a.gamePeer, a.httpPeer)
+	a.box, err = client.Client(a.gamePeer, a.httpPeer, a.conf.ProxyRule, a.conf.DirectRule, a.conf.ProxyDNS, a.conf.LocalDNS)
 	if err != nil {
 		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 			Type:    runtime.ErrorDialog,
@@ -296,6 +336,6 @@ func httpGet(url string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	return io.ReadAll(resp.Body)
 }

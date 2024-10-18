@@ -6,6 +6,7 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"net"
 )
 
 //go:embed all:frontend/dist
@@ -15,13 +16,19 @@ var assets embed.FS
 var logo []byte
 
 func main() {
+	dial, err := net.Dial("tcp", "127.0.0.1:54713")
+	if err == nil {
+		_, _ = dial.Write([]byte("SHOW_WINDOW"))
+		_ = dial.Close()
+		return
+	}
 	config.InitConfig()
 	// Create an instance of the app structure
 	app := NewApp()
 	defer app.Stop()
 
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:             "gpp",
 		Width:             360,
 		Height:            520,

@@ -8,7 +8,6 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
-	"fmt"
 	box "github.com/sagernet/sing-box"
 	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing/common/auth"
@@ -29,12 +28,10 @@ func Server(conf Peer) error {
 					Listen:     option.NewListenAddress(netip.MustParseAddr(conf.Addr)),
 					ListenPort: conf.Port,
 				},
-				Method:   "xchacha20-ietf-poly1305",
+				Method:   "aes-256-gcm",
 				Password: conf.UUID,
 				Multiplex: &option.InboundMultiplexOptions{
 					Enabled: true,
-					Padding: false,
-					Brutal:  nil,
 				},
 			},
 		}
@@ -97,19 +94,8 @@ func Server(conf Peer) error {
 						UUID: conf.UUID,
 					},
 				},
-				Transport: &option.V2RayTransportOptions{
-					Type: "ws",
-					WebsocketOptions: option.V2RayWebsocketOptions{
-						Path:                fmt.Sprintf("/%s", conf.UUID),
-						Headers:             nil,
-						MaxEarlyData:        2048,
-						EarlyDataHeaderName: "Sec-WebSocket-Protocol",
-					},
-				},
 				Multiplex: &option.InboundMultiplexOptions{
 					Enabled: true,
-					Padding: false,
-					Brutal:  nil,
 				},
 			},
 		}
