@@ -23,7 +23,7 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CGO_ENABLED: 1
+          CGO_ENABLED: 0
           GOOS: linux
           GOARCH: amd64
           LDFLAGS: '-extldflags "-static"'
