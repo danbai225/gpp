@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -25,6 +27,7 @@ type Rule struct {
 }
 type Config struct {
 	PeerList   []*Peer `json:"peer_list"`
+	SubAddr    string  `json:"sub_addr"`
 	ProxyRule  Rule    `json:"proxy_rule"`
 	DirectRule Rule    `json:"direct_rule"`
 	GamePeer   string  `json:"game_peer"`
@@ -71,6 +74,33 @@ func LoadConfig() (*Config, error) {
 	}
 	if conf.LocalDNS == "" {
 		conf.LocalDNS = "https://223.5.5.5/dns-query"
+	}
+	if conf.SubAddr != "" {
+		var resp *http.Response
+		var data []byte
+		resp, err = http.Get(conf.SubAddr)
+		if err != nil {
+			return nil, err
+		}
+		defer func() { _ = resp.Body.Close() }()
+		data, err = io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		peers := make([]*Peer, 0)
+		err = json.Unmarshal(data, &peers)
+		if err != nil {
+			return nil, err
+		}
+		set := make(map[string]*Peer)
+		conf.PeerList = append(conf.PeerList, peers...)
+		for _, peer := range conf.PeerList {
+			set[peer.Name] = peer
+		}
+		conf.PeerList = make([]*Peer, 0)
+		for _, peer := range set {
+			conf.PeerList = append(conf.PeerList, peer)
+		}
 	}
 	return conf, err
 }
