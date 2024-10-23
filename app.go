@@ -16,6 +16,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -207,27 +208,40 @@ func (a *App) Add(token string) string {
 	if a.conf.PeerList == nil {
 		a.conf.PeerList = make([]*config.Peer, 0)
 	}
-	err, peer := config.ParsePeer(token)
-	if err != nil {
-		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
-			Type:    runtime.ErrorDialog,
-			Title:   "导入错误",
-			Message: err.Error(),
-		})
-		return err.Error()
-	}
-	for _, p := range a.conf.PeerList {
-		if p.Name == peer.Name {
+	if strings.HasPrefix(token, "http") {
+		_, err := http.Get(token)
+		if err != nil {
+			_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+				Type:    runtime.ErrorDialog,
+				Title:   "订阅错误",
+				Message: err.Error(),
+			})
+			return err.Error()
+		}
+		a.conf.SubAddr = token
+	} else {
+		err, peer := config.ParsePeer(token)
+		if err != nil {
 			_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 				Type:    runtime.ErrorDialog,
 				Title:   "导入错误",
-				Message: fmt.Sprintf("节点 %s 已存在", peer.Name),
+				Message: err.Error(),
 			})
-			return fmt.Sprintf("peer %s already exists", peer.Name)
+			return err.Error()
 		}
+		for _, p := range a.conf.PeerList {
+			if p.Name == peer.Name {
+				_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+					Type:    runtime.ErrorDialog,
+					Title:   "导入错误",
+					Message: fmt.Sprintf("节点 %s 已存在", peer.Name),
+				})
+				return fmt.Sprintf("peer %s already exists", peer.Name)
+			}
+		}
+		a.conf.PeerList = append(a.conf.PeerList, peer)
 	}
-	a.conf.PeerList = append(a.conf.PeerList, peer)
-	err = config.SaveConfig(a.conf)
+	err := config.SaveConfig(a.conf)
 	if err != nil {
 		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 			Type:    runtime.ErrorDialog,

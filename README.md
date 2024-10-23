@@ -84,6 +84,9 @@ wails build
 - peer_list 节点列表
 - proxy_dns 代理dns
 - local_dns 直连dns
+- sub_addr 订阅地址
+- proxy_rule 代理规则
+- direct_rule 直连规则
 
 ```json
 {
@@ -104,6 +107,15 @@ wails build
         }
     ],
     "proxy_dns": "8.8.8.8",
-    "local_dns": "223.5.5.5"
+    "local_dns": "223.5.5.5",
+    "sub_addr": "https://sub.com",
+    "proxy_rule": {
+      "process_name": "C://1.exe",
+      "process_path_regex": "*2.exe"
+    },
+    "direct_rule": {
+      "process_name": "C://1.exe",
+      "process_path_regex": "*2.exe"
+    }
 }
 ```
