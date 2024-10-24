@@ -101,7 +101,7 @@ func getOUt(peer *config.Peer) option.Outbound {
 	out.Tag = uuid.New().String()
 	return out
 }
-func Client(gamePeer, httpPeer *config.Peer, proxy config.Rule, direct config.Rule, proxyDNS, localDNS string) (*box.Box, error) {
+func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []option.Rule) (*box.Box, error) {
 	home, _ := os.UserHomeDir()
 	proxyOut := getOUt(gamePeer)
 	proxyOut.Tag = "proxy"
@@ -310,23 +310,7 @@ func Client(gamePeer, httpPeer *config.Peer, proxy config.Rule, direct config.Ru
 			},
 		},
 	}...)
-	// direct
-	if len(direct.ProcessName) > 0 {
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessName: direct.ProcessName, Outbound: "direct"}})
-	}
-	if len(direct.ProcessPathRegex) > 0 {
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessPathRegex: direct.ProcessPathRegex, Outbound: "direct"}})
-	}
-	// proxy
-	if len(proxy.ProcessName) > 0 {
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessName: proxy.ProcessName, Outbound: "proxy"}})
-	}
-	if len(proxy.ProcessPathRegex) > 0 {
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessPathRegex: proxy.ProcessPathRegex, Outbound: "proxy"}})
-	}
-	if len(direct.ProcessName) == 0 && len(proxy.ProcessName) == 0 && (len(proxy.ProcessPathRegex) > 0 || len(direct.ProcessPathRegex) > 0) {
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{ProcessName: option.Listable[string]{uuid.New().String()}, Outbound: "direct"}})
-	}
+	options.Options.Route.Rules = append(options.Options.Route.Rules, rules...)
 	// http
 	if httpPeer != nil && httpPeer.Name != gamePeer.Name {
 		out := getOUt(httpPeer)

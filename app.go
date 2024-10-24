@@ -116,8 +116,24 @@ func (a *App) startup(ctx context.Context) {
 		a.conf = loadConfig
 	}
 	if len(a.conf.PeerList) > 0 {
-		a.gamePeer = a.conf.PeerList[0]
-		a.httpPeer = a.conf.PeerList[0]
+		if a.conf.GamePeer == "" {
+			a.conf.GamePeer = a.conf.PeerList[0].Name
+		} else {
+			for _, peer := range a.conf.PeerList {
+				if peer.Name == a.conf.GamePeer {
+					a.gamePeer = peer
+				}
+			}
+		}
+		if a.conf.HTTPPeer == "" {
+			a.conf.HTTPPeer = a.conf.PeerList[0].Name
+		} else {
+			for _, peer := range a.conf.PeerList {
+				if peer.Name == a.conf.HTTPPeer {
+					a.httpPeer = peer
+				}
+			}
+		}
 	}
 	go a.testPing()
 	home, _ := os.UserHomeDir()
@@ -269,14 +285,25 @@ func (a *App) SetPeer(game, http string) string {
 	for _, peer := range a.conf.PeerList {
 		if peer.Name == game {
 			a.gamePeer = peer
+			a.conf.GamePeer = peer.Name
 			break
 		}
 	}
 	for _, peer := range a.conf.PeerList {
 		if peer.Name == http {
 			a.httpPeer = peer
+			a.conf.HTTPPeer = peer.Name
 			break
 		}
+	}
+	err := config.SaveConfig(a.conf)
+	if err != nil {
+		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+			Type:    runtime.ErrorDialog,
+			Title:   "保存错误",
+			Message: err.Error(),
+		})
+		return err.Error()
 	}
 	return "ok"
 }
@@ -289,7 +316,7 @@ func (a *App) Start() string {
 		return "running"
 	}
 	var err error
-	a.box, err = client.Client(a.gamePeer, a.httpPeer, a.conf.ProxyRule, a.conf.DirectRule, a.conf.ProxyDNS, a.conf.LocalDNS)
+	a.box, err = client.Client(a.gamePeer, a.httpPeer, a.conf.ProxyDNS, a.conf.LocalDNS, a.conf.Rules)
 	if err != nil {
 		_, _ = runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
 			Type:    runtime.ErrorDialog,
