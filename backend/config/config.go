@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/sagernet/sing-box/option"
 	"io"
 	"net/http"
 	"os"
@@ -21,19 +22,14 @@ type Peer struct {
 	UUID     string `json:"uuid"`
 	Ping     uint   `json:"ping"`
 }
-type Rule struct {
-	ProcessName      []string `json:"process_name"`
-	ProcessPathRegex []string `json:"process_path_regex"`
-}
 type Config struct {
-	PeerList   []*Peer `json:"peer_list"`
-	SubAddr    string  `json:"sub_addr"`
-	ProxyRule  Rule    `json:"proxy_rule"`
-	DirectRule Rule    `json:"direct_rule"`
-	GamePeer   string  `json:"game_peer"`
-	HTTPPeer   string  `json:"http_peer"`
-	ProxyDNS   string  `json:"proxy_dns"`
-	LocalDNS   string  `json:"local_dns"`
+	PeerList []*Peer       `json:"peer_list"`
+	SubAddr  string        `json:"sub_addr"`
+	Rules    []option.Rule `json:"rules"`
+	GamePeer string        `json:"game_peer"`
+	HTTPPeer string        `json:"http_peer"`
+	ProxyDNS string        `json:"proxy_dns"`
+	LocalDNS string        `json:"local_dns"`
 }
 
 func InitConfig() {
@@ -111,7 +107,7 @@ func SaveConfig(config *Config) error {
 	if err != nil {
 		_path = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "config.json")
 	}
-	file, _ := json.Marshal(config)
+	file, _ := json.MarshalIndent(config, "", " ")
 	return os.WriteFile(_path, file, 0o644)
 }
 func ParsePeer(token string) (error, *Peer) {

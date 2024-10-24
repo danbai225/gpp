@@ -85,37 +85,38 @@ wails build
 - proxy_dns 代理dns
 - local_dns 直连dns
 - sub_addr 订阅地址
-- proxy_rule 代理规则
-- direct_rule 直连规则
+- rules [代理规则](https://sing-box.sagernet.org/zh/configuration/route/rule)
 
 ```json
 {
-    "peer_list": [
-        {
-            "name": "直连",
-            "protocol": "direct",
-            "port": 0,
-            "addr": "direct",
-            "uuid": ""
-        },
-        {
-            "name": "hk",
-            "protocol": "vless",
-            "port": 5123,
-            "addr": "xxx.xx.xx.xx",
-            "uuid": "xxx-xxx-xx-xxx-xxx"
-        }
-    ],
-    "proxy_dns": "8.8.8.8",
-    "local_dns": "223.5.5.5",
-    "sub_addr": "https://sub.com",
-    "proxy_rule": {
-      "process_name": "C://1.exe",
-      "process_path_regex": "*2.exe"
+  "peer_list": [
+    {
+      "name": "直连",
+      "protocol": "direct",
+      "port": 0,
+      "addr": "direct",
+      "uuid": ""
     },
-    "direct_rule": {
-      "process_name": "C://1.exe",
-      "process_path_regex": "*2.exe"
+    {
+      "name": "hk",
+      "protocol": "vless",
+      "port": 5123,
+      "addr": "xxx.xx.xx.xx",
+      "uuid": "xxx-xxx-xx-xxx-xxx"
     }
+  ],
+  "proxy_dns": "8.8.8.8",
+  "local_dns": "223.5.5.5",
+  "sub_addr": "https://sub.com",
+  "rules": [
+    {
+      "process_name": "C://1.exe",
+      "outbound": "direct"
+    },
+    {
+      "domain": "ipv4.ip.sb",
+      "outbound": "proxy"
+    }
+  ]
 }
 ```
