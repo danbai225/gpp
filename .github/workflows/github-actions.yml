@@ -83,7 +83,7 @@ jobs:
         env:
           GOOS: ${{ matrix.build.GOOS }}
           GOARCH: ${{ matrix.build.GOARCH }}
-        run: ~/go/bin/wails build -m -s -trimpath -skipbindings -devtools -tags webkit2_41,with_quic -o ${{ env.APP_NAME }}.exe
+        run: ~/go/bin/wails build -m -trimpath -tags webkit2_41,with_quic -o ${{ env.APP_NAME }}.exe
 
       # Compress: macOS
       - name: Create a compressed file for macOS
