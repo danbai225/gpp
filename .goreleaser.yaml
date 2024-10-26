@@ -6,7 +6,7 @@ builds:
     binary: gpp-server
     ldflags: -s -w
     flags:
-      - with_quic
+      - -tags=with_quic
     goos:
       - linux
       - darwin
