@@ -56,8 +56,8 @@ jobs:
           #   GOARCH: arm64
     runs-on: ${{ matrix.build.os }}
     env:
-      APP_NAME: gpp-client
-      ZIP_FILE: gpp-client-${{ matrix.build.GOOS }}-${{ matrix.build.GOARCH }}.zip
+      APP_NAME: gpp
+      ZIP_FILE: gpp-${{ matrix.build.GOOS }}-${{ matrix.build.GOARCH }}.zip
     steps:
       - uses: actions/checkout@v4
       - name: Set up Go
