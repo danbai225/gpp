@@ -4,6 +4,9 @@ builds:
     dir: .
     main: ./cmd/gpp/main.go
     binary: gpp-server
+    ldflags: -s -w
+    flags:
+      - -tags=with_quic
     goos:
       - linux
       - darwin

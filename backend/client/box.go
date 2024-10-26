@@ -109,11 +109,11 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 		Context: context.Background(),
 		Options: option.Options{
 			Log: &option.LogOptions{
-				Disabled:     false,
-				Level:        "info",
-				Output:       "run.log",
-				Timestamp:    true,
-				DisableColor: true,
+				Disabled: true,
+				//Level:        "info",
+				//Output:       "run.log",
+				//Timestamp:    true,
+				//DisableColor: true,
 			},
 			DNS: &option.DNSOptions{
 				Servers: []option.DNSServerOptions{

@@ -5,6 +5,8 @@
 - http分流
 - gui客户端
 - 基于tun代理
+- 自定义规则
+- 使用简单
 
 [qq交流群936204503](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=syMCYJm6Isz_yAxUfrQetpNGioUdpdjO&authKey=lkUyXpKkdAzUwOZYq0m%2BH5Y%2FvAU3XegyxWTm5fM1%2BxOZDdBHJUF%2BODVeNg9MraDl&noverify=0&group_code=936204503)
 [TG交流群](https://t.me/+3cX2FOX_owA1ODM1)
@@ -36,6 +38,12 @@ bash <(curl -sL https://raw.githubusercontent.com/danbai225/gpp/main/server/inst
 
 点击页面上的`Game`或`Http`字样弹出节点列表窗口，在下方粘贴服务端的链接完成节点导入。
 在节点列表选择你的加速节点，如何开始加速。
+
+## mac修复损害
+安装后命令行执行
+```bash
+sudo xattr -r -d com.apple.quarantine /Applications/gpp.app
+```
 
 # 编译
 
