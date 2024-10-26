@@ -39,7 +39,7 @@ bash <(curl -sL https://raw.githubusercontent.com/danbai225/gpp/main/server/inst
 点击页面上的`Game`或`Http`字样弹出节点列表窗口，在下方粘贴服务端的链接完成节点导入。
 在节点列表选择你的加速节点，如何开始加速。
 
-## mac修复损害
+## mac修复损坏
 安装后命令行执行
 ```bash
 sudo xattr -r -d com.apple.quarantine /Applications/gpp.app
