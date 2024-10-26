@@ -36,24 +36,12 @@ jobs:
           - os: windows-latest
             GOOS: windows
             GOARCH: amd64
-          - os: windows-latest
-            GOOS: windows
-            GOARCH: arm64
-          - os: windows-latest
-            GOOS: windows
-            GOARCH: 386
-          - os: macos-latest
-            GOOS: darwin
-            GOARCH: amd64
           - os: macos-latest
             GOOS: darwin
             GOARCH: arm64
           - os: ubuntu-latest
             GOOS: linux
             GOARCH: amd64
-          # - os: ubuntu-latest
-          #   GOOS: linux
-          #   GOARCH: arm64
     runs-on: ${{ matrix.build.os }}
     env:
       APP_NAME: gpp
