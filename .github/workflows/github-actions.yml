@@ -65,10 +65,6 @@ jobs:
         with:
           go-version-file: ./go.mod
       - run: go version
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
       - run: node -v
       - name: Install dependencies
         run: |
