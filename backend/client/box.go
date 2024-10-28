@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/danbai225/gpp/backend/config"
 	"github.com/google/uuid"
@@ -110,10 +111,6 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 		Options: option.Options{
 			Log: &option.LogOptions{
 				Disabled: true,
-				//Level:        "info",
-				//Output:       "run.log",
-				//Timestamp:    true,
-				//DisableColor: true,
 			},
 			DNS: &option.DNSOptions{
 				Servers: []option.DNSServerOptions{
@@ -136,6 +133,16 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 					},
 				},
 				Rules: []option.DNSRule{
+					{
+						Type: "default",
+						DefaultOptions: option.DefaultDNSRule{
+							Server: "localDns",
+							Domain: []string{
+								gamePeer.Domain(),
+								httpPeer.Domain(),
+							},
+						},
+					},
 					{
 						Type: "default",
 						DefaultOptions: option.DefaultDNSRule{
@@ -317,6 +324,17 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 		options.Options.Outbounds = append(options.Options.Outbounds, out)
 		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http"}, Outbound: out.Tag}})
 		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Network: option.Listable[string]{"tcp"}, Port: []uint16{80, 443, 8080, 8443}, Outbound: out.Tag}})
+	}
+	if config.Debug.Load() {
+		options.Log = &option.LogOptions{
+			Disabled:     false,
+			Level:        "trace",
+			Output:       "debug.log",
+			Timestamp:    true,
+			DisableColor: true,
+		}
+		indent, _ := json.MarshalIndent(options, "", " ")
+		_ = os.WriteFile("sing.json", indent, os.ModePerm)
 	}
 	var instance, err = box.New(options)
 	if err != nil {

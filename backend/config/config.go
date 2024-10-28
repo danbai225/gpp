@@ -8,11 +8,15 @@ import (
 	"github.com/sagernet/sing-box/option"
 	"io"
 	"net/http"
+	"net/netip"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync/atomic"
 )
+
+var Debug atomic.Bool
 
 type Peer struct {
 	Name     string `json:"name"`
@@ -22,6 +26,16 @@ type Peer struct {
 	UUID     string `json:"uuid"`
 	Ping     uint   `json:"ping"`
 }
+
+func (p *Peer) Domain() string {
+	host := strings.Split(p.Addr, ":")[0]
+	_, err := netip.ParseAddr(host)
+	if err != nil {
+		return host
+	}
+	return "placeholder.com"
+}
+
 type Config struct {
 	PeerList []*Peer       `json:"peer_list"`
 	SubAddr  string        `json:"sub_addr"`
@@ -30,6 +44,7 @@ type Config struct {
 	HTTPPeer string        `json:"http_peer"`
 	ProxyDNS string        `json:"proxy_dns"`
 	LocalDNS string        `json:"local_dns"`
+	Debug    bool          `json:"debug"`
 }
 
 func InitConfig() {
@@ -97,6 +112,9 @@ func LoadConfig() (*Config, error) {
 		for _, peer := range set {
 			conf.PeerList = append(conf.PeerList, peer)
 		}
+	}
+	if conf.Debug {
+		Debug.Swap(true)
 	}
 	return conf, err
 }

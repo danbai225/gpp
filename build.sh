@@ -1,2 +1,2 @@
 go install github.com/wailsapp/wails/v2/cmd/wails@latest
-wails build -tags with_quic
+wails build -m -trimpath -tags webkit2_41,with_quic

@@ -16,6 +16,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -96,10 +97,9 @@ func (a *App) systemTray() {
 }
 
 func (a *App) testPing() {
-	a.PingAll()
-	tick := time.Tick(time.Second * 5)
-	for range tick {
+	for {
 		a.PingAll()
+		time.Sleep(time.Second * 5)
 	}
 }
 func (a *App) startup(ctx context.Context) {
@@ -218,7 +218,9 @@ func (a *App) Status() *data.Status {
 }
 
 func (a *App) List() []*config.Peer {
-	return a.conf.PeerList
+	list := a.conf.PeerList
+	sort.Slice(list, func(i, j int) bool { return list[i].Ping < list[j].Ping })
+	return list
 }
 func (a *App) Add(token string) string {
 	if a.conf.PeerList == nil {
