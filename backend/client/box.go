@@ -105,6 +105,11 @@ func getOUt(peer *config.Peer) option.Outbound {
 func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []option.Rule) (*box.Box, error) {
 	home, _ := os.UserHomeDir()
 	proxyOut := getOUt(gamePeer)
+	httpOut := proxyOut
+	if httpPeer != nil {
+		httpOut = getOUt(httpPeer)
+	}
+	httpOut.Tag = "http"
 	proxyOut.Tag = "proxy"
 	options := box.Options{
 		Context: context.Background(),
@@ -205,13 +210,13 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 				AutoDetectInterface: true,
 				GeoIP: &option.GeoIPOptions{
 					Path:           fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geoip.db"),
-					DownloadURL:    "https://ghp.ci/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
-					DownloadDetour: "direct",
+					DownloadURL:    "https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
+					DownloadDetour: "http",
 				},
 				Geosite: &option.GeositeOptions{
 					Path:           fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geosite.db"),
-					DownloadURL:    "https://ghp.ci/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
-					DownloadDetour: "direct",
+					DownloadURL:    "https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
+					DownloadDetour: "http",
 				},
 				Rules: []option.Rule{
 					{
@@ -320,10 +325,9 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 	options.Options.Route.Rules = append(options.Options.Route.Rules, rules...)
 	// http
 	if httpPeer != nil && httpPeer.Name != gamePeer.Name {
-		out := getOUt(httpPeer)
-		options.Options.Outbounds = append(options.Options.Outbounds, out)
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http"}, Outbound: out.Tag}})
-		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Network: option.Listable[string]{"tcp"}, Port: []uint16{80, 443, 8080, 8443}, Outbound: out.Tag}})
+		options.Options.Outbounds = append(options.Options.Outbounds, httpOut)
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http"}, Outbound: httpOut.Tag}})
+		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Network: option.Listable[string]{"tcp"}, Port: []uint16{80, 443, 8080, 8443}, Outbound: httpOut.Tag}})
 	}
 	if config.Debug.Load() {
 		options.Log = &option.LogOptions{
