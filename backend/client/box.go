@@ -237,6 +237,7 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 			},
 			Outbounds: []option.Outbound{
 				proxyOut,
+				httpOut,
 				{
 					Type: "block",
 					Tag:  "block",
@@ -325,7 +326,6 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 	options.Options.Route.Rules = append(options.Options.Route.Rules, rules...)
 	// http
 	if httpPeer != nil && httpPeer.Name != gamePeer.Name {
-		options.Options.Outbounds = append(options.Options.Outbounds, httpOut)
 		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Protocol: option.Listable[string]{"http"}, Outbound: httpOut.Tag}})
 		options.Options.Route.Rules = append(options.Options.Route.Rules, option.Rule{Type: "default", DefaultOptions: option.DefaultRule{Network: option.Listable[string]{"tcp"}, Port: []uint16{80, 443, 8080, 8443}, Outbound: httpOut.Tag}})
 	}
