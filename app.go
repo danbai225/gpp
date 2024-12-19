@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/sha256"
 	"fmt"
 	"github.com/cloverstd/tcping/ping"
 	"github.com/danbai225/gpp/backend/client"
@@ -136,45 +135,6 @@ func (a *App) startup(ctx context.Context) {
 		}
 	}
 	go a.testPing()
-	home, _ := os.UserHomeDir()
-	geoPath := fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geoip.db")
-	file, err := os.ReadFile(geoPath)
-	if err == nil {
-		rdata, err2 := httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db.sha256sum")
-		if err2 == nil {
-			sum256 := sha256.Sum256(file)
-			if fmt.Sprintf("%x", sum256) != string(rdata) {
-				rdata, err2 = httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
-				if err2 == nil {
-					_ = os.WriteFile(geoPath, rdata, 0o644)
-				}
-			}
-		}
-	} else {
-		rdata, err2 := httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db")
-		if err2 == nil {
-			_ = os.WriteFile(geoPath, rdata, 0o644)
-		}
-	}
-	geoPath = fmt.Sprintf("%s%c%s%c%s", home, os.PathSeparator, ".gpp", os.PathSeparator, "geosite.db")
-	file, err = os.ReadFile(geoPath)
-	if err == nil {
-		rdata, err2 := httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db.sha256sum")
-		if err2 == nil {
-			sum256 := sha256.Sum256(file)
-			if fmt.Sprintf("%x", sum256) != string(rdata) {
-				rdata, err2 = httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
-				if err2 == nil {
-					_ = os.WriteFile(geoPath, rdata, 0o644)
-				}
-			}
-		}
-	} else {
-		rdata, err2 := httpGet("https://ghp.ci/https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db")
-		if err2 == nil {
-			_ = os.WriteFile(geoPath, rdata, 0o644)
-		}
-	}
 }
 func (a *App) PingAll() {
 	a.lock.Lock()
