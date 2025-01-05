@@ -8,10 +8,7 @@
 - 自定义规则
 - 使用简单
 
-[qq交流群936204503](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=syMCYJm6Isz_yAxUfrQetpNGioUdpdjO&authKey=lkUyXpKkdAzUwOZYq0m%2BH5Y%2FvAU3XegyxWTm5fM1%2BxOZDdBHJUF%2BODVeNg9MraDl&noverify=0&group_code=936204503)
-[TG交流群](https://t.me/+3cX2FOX_owA1ODM1)
-[雨云服务器-香港CN2](https://www.rainyun.com/MzI4MDcx_)
-
+[qq交流群936204503](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=syMCYJm6Isz_yAxUfrQetpNGioUdpdjO&authKey=lkUyXpKkdAzUwOZYq0m%2BH5Y%2FvAU3XegyxWTm5fM1%2BxOZDdBHJUF%2BODVeNg9MraDl&noverify=0&group_code=936204503) [TG交流群](https://t.me/+3cX2FOX_owA1ODM1)
 # 截图
 
 |                                                         |                                                       |
@@ -129,3 +126,10 @@ wails build
   ]
 }
 ```
+# 测试vps
+
+- [雨云服务器](https://www.rainyun.com/MzI4MDcx_) : [香港](https://paste.spiritlhl.net/#/show/rB66f.txt)
+
+- [HostYun](https://my.hostyun.com/page.aspx?c=referral&u=23819) : [韩国-推荐](https://paste.spiritlhl.net/#/show/rB66f.txt)
+
+- [akile](https://akile.io/register?aff_code=aad5febb-13aa-4143-a8ad-1290b60a2f27) : [香港](https://paste.spiritlhl.net/#/show/XFyy8.txt) [台湾](https://paste.spiritlhl.net/#/show/CimOu.txt) [日本](https://paste.spiritlhl.net/#/show/z3zzb.txt) [美国](https://paste.spiritlhl.net/#/show/u47B1.txt)
