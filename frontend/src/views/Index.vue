@@ -51,7 +51,7 @@
           </n-button>
         </n-space>
         <n-gradient-text type="success" style="margin-left: 130px;margin-top: 35px">
-          v1.4.3
+          v1.4.5
         </n-gradient-text>
       </n-space>
       <div>
@@ -68,7 +68,7 @@
               v-model:value="gameValue"
               vertical
               filterable
-              :options="gameHttpOpt"
+              :options="gameOpt"
               placeholder="请选择Game"
               value-field="val"
               label-field="name"
@@ -78,7 +78,7 @@
               v-model:value="httpValue"
               vertical
               filterable
-              :options="gameHttpOpt"
+              :options="httpOpt"
               placeholder="请选择Http"
               value-field="val"
               label-field="name"
@@ -107,7 +107,8 @@ const state = ref(false)
 const btnText = ref('开始加速')
 const btnDisabled = ref(false)
 const showModal = ref(false)
-const gameHttpOpt = ref(Array<SelectOption | SelectGroupOption>())
+const gameOpt = ref(Array<SelectOption | SelectGroupOption>())
+const httpOpt = ref(Array<SelectOption | SelectGroupOption>())
 const gameValue = ref()
 const httpValue = ref()
 
@@ -171,10 +172,25 @@ const stop = () => {
 }
 const getList = () => {
   showModal.value = true
-  gameHttpOpt.value = Array<SelectOption | SelectGroupOption>()
+  httpOpt.value = Array<SelectOption | SelectGroupOption>()
+  gameOpt.value = Array<SelectOption | SelectGroupOption>()
   List().then(res => {
     res.forEach((item) => {
-      gameHttpOpt.value.push({
+      if(item.name.startsWith("game")){
+        return
+      }
+      httpOpt.value.push({
+        name: item.name + '-' + item.ping + 'ms',
+        val: item.name
+      })
+    })
+  })
+  List().then(res => {
+    res.forEach((item) => {
+      if(item.name.startsWith("http")){
+        return
+      }
+      gameOpt.value.push({
         name: item.name + '-' + item.ping + 'ms',
         val: item.name
       })
