@@ -24,7 +24,7 @@ type Peer struct {
 	Port     uint16 `json:"port"`
 	Addr     string `json:"addr"`
 	UUID     string `json:"uuid"`
-	Ping     int64  `json:"ping"`
+	Ping     uint   `json:"ping"`
 }
 
 func (p *Peer) Domain() string {

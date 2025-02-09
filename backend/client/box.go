@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func GetOUt(peer *config.Peer) option.Outbound {
+func getOUt(peer *config.Peer) option.Outbound {
 	var out option.Outbound
 	switch peer.Protocol {
 	case "shadowsocks":
@@ -104,10 +104,10 @@ func GetOUt(peer *config.Peer) option.Outbound {
 }
 func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []option.Rule) (*box.Box, error) {
 	home, _ := os.UserHomeDir()
-	proxyOut := GetOUt(gamePeer)
+	proxyOut := getOUt(gamePeer)
 	httpOut := proxyOut
 	if httpPeer != nil {
-		httpOut = GetOUt(httpPeer)
+		httpOut = getOUt(httpPeer)
 	}
 	httpOut.Tag = "http"
 	proxyOut.Tag = "proxy"

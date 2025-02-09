@@ -14,6 +14,10 @@ export function List() {
   return window['go']['main']['App']['List']();
 }
 
+export function PingAll() {
+  return window['go']['main']['App']['PingAll']();
+}
+
 export function SetPeer(arg1, arg2) {
   return window['go']['main']['App']['SetPeer'](arg1, arg2);
 }

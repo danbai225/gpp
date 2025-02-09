@@ -3,14 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/cloverstd/tcping/ping"
 	"github.com/danbai225/gpp/backend/client"
 	"github.com/danbai225/gpp/backend/config"
 	"github.com/danbai225/gpp/backend/data"
 	"github.com/danbai225/gpp/systray"
 	box "github.com/sagernet/sing-box"
-	"github.com/sagernet/sing-box/outbound"
-	"github.com/sagernet/sing/common/logger"
-	"github.com/sagernet/sing/common/metadata"
 	netutils "github.com/shirou/gopsutil/v3/net"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"io"
@@ -99,12 +97,7 @@ func (a *App) systemTray() {
 
 func (a *App) testPing() {
 	for {
-		for i := range a.conf.PeerList {
-			if a.conf.PeerList[i].Protocol == "direct" {
-				continue
-			}
-			a.conf.PeerList[i].Ping = testPeer(a.conf.PeerList[i])
-		}
+		a.PingAll()
 		time.Sleep(time.Second * 5)
 	}
 }
@@ -142,6 +135,27 @@ func (a *App) startup(ctx context.Context) {
 		}
 	}
 	go a.testPing()
+}
+func (a *App) PingAll() {
+	a.lock.Lock()
+	if a.box != nil {
+		a.lock.Unlock()
+		return
+	}
+	a.lock.Unlock()
+	group := sync.WaitGroup{}
+	for i := range a.conf.PeerList {
+		if a.conf.PeerList[i].Protocol == "direct" {
+			continue
+		}
+		group.Add(1)
+		peer := a.conf.PeerList[i]
+		go func() {
+			defer group.Done()
+			peer.Ping = pingPort(peer.Addr, peer.Port)
+		}()
+	}
+	group.Wait()
 }
 
 func (a *App) Status() *data.Status {
@@ -306,29 +320,25 @@ func (a *App) Stop() string {
 	a.box = nil
 	return "ok"
 }
-func testPeer(peer *config.Peer) int64 {
-	out := client.GetOUt(peer)
-	d, err := outbound.New(context.Background(), nil, logger.NOP(), out.Tag, out)
+func pingPort(host string, port uint16) uint {
+	tcPing := ping.NewTCPing()
+	tcPing.SetTarget(&ping.Target{
+		Host:     host,
+		Port:     int(port),
+		Counter:  1,
+		Interval: time.Millisecond * 200,
+		Timeout:  time.Second * 3,
+	})
+	start := tcPing.Start()
+	<-start
+	result := tcPing.Result()
+	return uint(result.Avg().Milliseconds())
+}
+func httpGet(url string) ([]byte, error) {
+	resp, err := http.Get(url)
 	if err != nil {
-		return -1
-	}
-	httpClient := http.Client{
-		Transport: &http.Transport{
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				return d.DialContext(context.Background(), network, metadata.ParseSocksaddr(addr))
-			},
-		},
-		Timeout: time.Second * 15,
-	}
-	resp, err := httpClient.Get("https://speed.cloudflare.com/__down?bytes=32768")
-	if err != nil {
-		return -1
+		return nil, err
 	}
 	defer func() { _ = resp.Body.Close() }()
-	now := time.Now()
-	_, err = io.ReadAll(resp.Body)
-	if err != nil {
-		return -1
-	}
-	return time.Since(now).Milliseconds()
+	return io.ReadAll(resp.Body)
 }
