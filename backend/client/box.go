@@ -180,7 +180,7 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 						InterfaceName: "utun225",
 						MTU:           9000,
 						Address: option.Listable[netip.Prefix]{
-							netip.MustParsePrefix("172.225.0.1/30"),
+							netip.MustParsePrefix("172.25.0.1/30"),
 						},
 						AutoRoute:              true,
 						StrictRoute:            true,
@@ -279,35 +279,23 @@ func Client(gamePeer, httpPeer *config.Peer, proxyDNS, localDNS string, rules []
 		{
 			Type: "default",
 			DefaultOptions: option.DefaultRule{
-				DomainSuffix: option.Listable[string]{"vivox.com",
+				IPCIDR: option.Listable[string]{
+					"85.236.96.0/21",
+					"188.42.95.0/24",
+					"188.42.147.0/24"},
+				Outbound: "direct",
+			},
+		}, {
+			Type: "default",
+			DefaultOptions: option.DefaultRule{
+				DomainSuffix: option.Listable[string]{
+					"vivox.com",
 					"cm.steampowered.com",
 					"steamchina.com",
 					"steamcontent.com",
 					"steamserver.net",
 					"steamusercontent.com",
-				},
-				Outbound: "direct",
-			},
-		}, {
-			Type: "default",
-			DefaultOptions: option.DefaultRule{
-				SourceIPCIDR: option.Listable[string]{"63.251.140.0/24",
-					"69.25.124.0/23",
-					"70.42.8.0/24",
-					"70.42.198.0/23",
-					"74.201.102.0/23",
-					"74.201.106.0/23",
-					"74.201.105.108/30",
-					"85.236.96.0/21",
-					"188.42.95.0/24",
-					"188.42.147.0/24",
-					"216.52.53.0/24"},
-				Outbound: "direct",
-			},
-		}, {
-			Type: "default",
-			DefaultOptions: option.DefaultRule{
-				Domain: option.Listable[string]{"csgo.wmsj.cn",
+					"csgo.wmsj.cn",
 					"dl.steam.clngaa.com",
 					"dl.steam.ksyna.com",
 					"dota2.wmsj.cn",
