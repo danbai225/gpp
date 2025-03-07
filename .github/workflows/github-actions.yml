@@ -2,9 +2,9 @@ name: releaser
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 env:
-  NODE_OPTIONS: "--max-old-space-size=4096"  # 增加 Node.js 可用的最大内存，防止构建失败
+  NODE_OPTIONS: "--max-old-space-size=4096" # 增加 Node.js 可用的最大内存，防止构建失败
 jobs:
   build-server:
     runs-on: ubuntu-latest
@@ -71,7 +71,7 @@ jobs:
         env:
           GOOS: ${{ matrix.build.GOOS }}
           GOARCH: ${{ matrix.build.GOARCH }}
-        run: ~/go/bin/wails build -m -trimpath -tags webkit2_41,with_quic -o ${{ env.APP_NAME }}.exe
+        run: ~/go/bin/wails build -m -trimpath -tags with_quic -webview2 embed -o ${{ env.APP_NAME }}.exe
 
       # Compress: macOS
       - name: Create a compressed file for macOS
