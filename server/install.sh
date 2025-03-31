@@ -35,7 +35,7 @@ check_command() {
 }
 
 # 检查必要的命令
-check_command "uuidgen" "util-linux"
+check_command "uuidgen" "uuid-runtime"
 check_command "curl" "curl"
 check_command "tar" "tar"
 
@@ -229,7 +229,7 @@ chmod +x run.sh
 
 # 检测是否支持systemd
 HAS_SYSTEMD=false
-if command -v systemctl &> /dev/null; then
+if command -v systemctl &> /dev/null && [ ! -f /.dockerenv ]; then
     HAS_SYSTEMD=true
 fi
 
@@ -258,9 +258,9 @@ EOF
     systemctl daemon-reload
     
     echo "systemd服务已创建。您可以使用以下命令管理服务:"
-    echo "启动服务: sudo systemctl start gpp"
-    echo "停止服务: sudo systemctl stop gpp"
-    echo "查看状态: sudo systemctl status gpp"
+    echo "启动服务: sudo systemctl start gpp 或 sudo service gpp start"
+    echo "停止服务: sudo systemctl stop gpp 或 sudo service gpp stop"
+    echo "查看状态: sudo systemctl status gpp 或 sudo service gpp status"
     echo "启用开机自启: sudo systemctl enable gpp"
     
     # 询问是否立即启动服务并设置开机自启
@@ -276,8 +276,15 @@ EOF
         echo "服务已设置为开机自启"
     fi
 else
-    echo "未检测到systemd，将使用传统方式管理服务"
+    echo "使用传统方式管理服务"
     echo "安装完成,请执行 ${INSTALL_PATH}/run.sh start 启动服务端,执行 ${INSTALL_PATH}/run.sh stop 停止服务端"
+    
+    # 询问是否立即启动服务
+    read -p "是否立即启动服务? (y/n): " START_SERVICE
+    if [ "$START_SERVICE" = "y" ] || [ "$START_SERVICE" = "Y" ]; then
+        ${INSTALL_PATH}/run.sh start
+        echo "服务已启动"
+    fi
 fi
 
 read -p "请为您的节点取一个名字: " Name
