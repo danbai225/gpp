@@ -130,4 +130,3 @@ wails build
 # 支持
 
 - [独角鲸](https://fuckip.me/)
-- [PlayFast](https://playfast.org/)
