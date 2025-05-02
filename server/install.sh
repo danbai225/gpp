@@ -229,7 +229,7 @@ chmod +x run.sh
 
 # 检测是否支持systemd
 HAS_SYSTEMD=false
-if command -v systemctl &> /dev/null && [ ! -f /.dockerenv ]; then
+if command -v systemctl &> /dev/null ; then
     HAS_SYSTEMD=true
 fi
 
