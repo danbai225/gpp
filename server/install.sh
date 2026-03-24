@@ -137,23 +137,17 @@ esac
 
 echo "下载服务端 。。。"
 
-# 动态地拼接下载URL
-latest_release_url=$(curl -s https://api.github.com/repos/danbai225/gpp/releases/latest | grep "browser_download_url.*_linux_$ARCH.tar.gz" | cut -d : -f 2,3 | tr -d \")
+# 使用可预测的下载URL
+latest_release_url="https://github.com/danbai225/gpp/releases/latest/download/gpp-linux-$ARCH.tar.gz"
 
-# 检查是否成功获取URL
-if [ -z "$latest_release_url" ]; then
-    echo "错误: 无法获取下载URL，请检查网络连接或手动下载。"
-    exit 1
-fi
-
-filename=$(basename $latest_release_url)
+filename="gpp-linux-$ARCH.tar.gz"
 
 echo "下载文件: $filename"
 
-curl -LO $latest_release_url
+curl -fLO $latest_release_url
 
 if [ $? -ne 0 ]; then
-    echo "错误: 下载失败，请检查网络连接或手动下载。"
+    echo "错误: 下载失败，请检查网络连接或手动下载。如果你在访问 github.com 时有困难，可以考虑使用镜像地址。"
     exit 1
 fi
 

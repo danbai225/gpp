@@ -14,3 +14,11 @@ builds:
     goarch:
       - amd64
       - arm64
+      - "386"
+      - arm
+
+archives:
+  - format: tar.gz
+    name_template: "gpp-{{ .Os }}-{{ .Arch }}"
+    files:
+      - none*
