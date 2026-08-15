@@ -1,3 +1,6 @@
+> **广告**：直播/游戏加速线路定制 联系：[tg](https://t.me/rand_xx231jnfasj_bot)
+> 
+
 # gpp
 
 基于[sing-box](https://github.com/SagerNet/sing-box)+[wails](https://github.com/wailsapp/wails)的加速器，使用golang编写，支持windows、linux、macos
